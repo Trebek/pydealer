@@ -3,7 +3,7 @@ PyDealer: Playing Card Simulator
 
 A module containing classes/methods for simulating decks of playing cards (standard 'French deck'). Could possibly be used for a command prompt/console, card-based game.
 
-**[See a demo.](http://repl.it/MVy)**
+**[See a demo.](http://repl.it/MVy/1)**
 
 **Features:**
 
