@@ -1,7 +1,7 @@
-PyDeck
+PyDealer: Playing Card Simulator
 =============================
 
-A module containing a class/methods for generating/shuffling/dealing any number of decks of 52 playing cards (standard 'French deck'). Possibly could be used for a command prompt/console (not a video game console), card-based game.
+A module containing classes/methods for simulating decks of playing cards (standard 'French deck'). Could possibly be used for a command prompt/console, card-based game.
 
 **[See a demo.](http://repl.it/MVy)**
 
@@ -10,8 +10,10 @@ A module containing a class/methods for generating/shuffling/dealing any number 
 - Generates a standard 'French deck' of 52 playing cards.
 - Can shuffle the deck.
 - Can deal a specified number of cards from the deck.
-    - At the moment, when the deck runs out of cards PyDeck just generates a new deck, shuffles, and continues on. Probably make that togglable at some point.
-- Each card is it's own object, with a name, abbreviation, and value.
+    - When a deck runs out of cards while dealing, PyDealer, by default, builds a new deck, shuffles, and continues on. This is togglable.
+- Can find the locations of all of the cards of a given value, suit, name, or abbreviation.
+- Can peek at a card in a given location in the deck.
+- Each card is it's own object, with a value (Ace, Queen, 2, etc.), a suit (Spades, Hearts, Clubs, etc.), a name ("Ace of Spades", "2 of Clubs", "Queen of Hearts", etc.), and an abbreviation ("AS", "2C", "QH", etc.).
 
 **Relevant links:**  
 
