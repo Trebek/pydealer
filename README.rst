@@ -6,6 +6,21 @@ A simple package with classes for constructing a ``Deck`` object, of 52 common
 playing cards. Each card is a separate ``Card`` object, with a name, value, 
 suit, and abbreviation. Could possibly be used for a command prompt/console, card-based game.
 
+Install/Uninstall with PIP_
+===========================
+
+Install
+-------
+::
+
+    pip install https://github.com/Trebek/pydealer/archive/master.zip
+
+Uninstall
+---------
+::
+
+    pip uninstall pydealer
+
 Basic Usage
 ===========
 
@@ -143,3 +158,5 @@ Relevant Links
 
 | `Standard 52-card deck Wikipedia Article <http://en.wikipedia.org/wiki/Standard_52-card_deck>`_
 | `Playing card Wikipedia Article <http://en.wikipedia.org/wiki/Playing_card>`_
+
+.. _PIP: https://pypi.python.org/pypi/pip/
