@@ -123,7 +123,7 @@ class Deck(object):
                 cards.append(card)
                 num -= 1
             elif rebuild:
-                self.build_deck()
+                self.build()
                 self.shuffle()
             else:
                 break
