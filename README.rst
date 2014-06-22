@@ -28,9 +28,9 @@ Make a Deck, Deal Some Cards
 ----------------------------
 ::
 
-    import pyroller
+    import pydealer
 
-    deck = pyroller.Deck()
+    deck = pydealer.Deck()
     deck.shuffle()
 
     hand = deck.deal(7)
@@ -53,9 +53,9 @@ Peek at Specific Deck Indice
 ----------------------------
 ::
 
-    import pyroller
+    import pydealer
 
-    deck = pyroller.Deck()
+    deck = pydealer.Deck()
     deck.shuffle()
 
     i = 25
@@ -77,9 +77,9 @@ Single Card
 ^^^^^^^^^^^
 ::
 
-    import pyroller
+    import pydealer
 
-    deck = pyroller.Deck()
+    deck = pydealer.Deck()
     deck.shuffle()
 
     name = "Ace of Spades"
@@ -100,9 +100,9 @@ List of Cards
 The list can contain full card names, abbreviations, suits, values, or a mixture of any/all of them.
 ::
 
-    import pyroller
+    import pydealer
 
-    deck = pyroller.Deck()
+    deck = pydealer.Deck()
     deck.shuffle()
 
     terms = ["AS", "Queen of Hearts", "2"]
@@ -126,9 +126,9 @@ Get & Remove Specific Card(s)
 -----------------------------
 ::
 
-    import pyroller
+    import pydealer
 
-    deck = pyroller.Deck()
+    deck = pydealer.Deck()
     deck.shuffle()
 
     name = "Ace of Spades"
