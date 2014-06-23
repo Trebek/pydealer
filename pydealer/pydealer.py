@@ -107,6 +107,8 @@ class Deck(object):
         for check in check_list:
             if check == term:
                 return True
+        else:
+            return False
 
     def deal(self, num=1, rebuild=True):
         """
