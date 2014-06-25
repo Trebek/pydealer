@@ -96,10 +96,9 @@ class Deck(object):
         :returns: True/False, depending on the check.
 
         """
-        check_list = [
-            card.name.lower(), card.suit.lower(), card.value.lower(), 
-            card.abbrev[0].lower(), card.abbrev[1].lower(), 
-            card.abbrev[0:2].lower()
+        check_list = [x.lower() for x in
+            card.name, card.suit, card.value, card.abbrev[0],
+            card.abbrev[1], card.abbrev[0:2]
         ]
 
         term = term.lower()
@@ -107,6 +106,8 @@ class Deck(object):
         for check in check_list:
             if check == term:
                 return True
+        else:
+            return False
 
     def deal(self, num=1, rebuild=True):
         """
@@ -115,20 +116,20 @@ class Deck(object):
         :returns: A given number of cards from the deck.
 
         """
-        cards = []
+        dealt_cards = []
 
-        while num:
-            if self.size:
-                card = self.cards.pop()
-                cards.append(card)
-                num -= 1
-            elif rebuild:
-                self.build()
-                self.shuffle()
-            else:
-                break
+        for n in xrange(num):
+            if self.size == 0:
+                if rebuild:
+                    self.build()
+                    self.shuffle()
+                else:
+                    break
+                
+            card = self.cards.pop()
+            dealt_cards.append(card)
    
-        return cards
+        return dealt_cards
 
     def find(self, terms):
         """
@@ -140,15 +141,12 @@ class Deck(object):
 
         """
         if type(terms) != list:
-            found_cards = [
-                self.cards.index(x) for x in self.cards if 
-                self.check_term(x, terms)
-            ]
-        else:
-            found_cards = [
-                self.cards.index(x) for x in self.cards for y in terms if 
-                self.check_term(x, y) 
-            ]
+            terms = [terms]
+        
+        found_cards = [
+            self.cards.index(x) for x in self.cards for y in terms if 
+            self.check_term(x, y) 
+        ]
 
         return found_cards
 
@@ -162,17 +160,15 @@ class Deck(object):
         got_cards = []
 
         if type(terms) != list:
-            index = self.find(terms)
+            terms = [terms]
+            
+        for item in terms:
+            index = self.find(item)
             if index:
-                got_cards.extend([self.cards[i] for i in index])
-        else:
-            for item in terms:
-                index = self.find(item)
-                if index:
-                    got_cards.extend(
-                        [self.cards[i] for i in index if 
-                        self.cards[i] not in got_cards]
-                    )
+                got_cards.extend(
+                    [self.cards[i] for i in index if 
+                    self.cards[i] not in got_cards]
+                )
 
         for card in got_cards:
             self.cards.remove(card)
@@ -188,7 +184,9 @@ class Deck(object):
         """
         return_vals = {
             "name": self.cards[position].name,
+            "abbr": self.cards[position].abbrev,
             "abbrev": self.cards[position].abbrev,
+            "abbreviation": self.cards[position].abbrev,
             "value": self.cards[position].value,
             "face": self.cards[position].value,
             "suit": self.cards[position].suit,
@@ -236,16 +234,13 @@ class Card(object):
             & suit
 
         """
-        value_str = str(value)
-        val_type = type(value)
-
-        if val_type is str:
-            if value != "Joker":
-                return "%s%s" % (value_str[0], suit[0])
-            else:
-                return "%s%s" % (value_str[0], "K")
-        elif val_type is int:
-            return "%s%s" % (value_str, suit[0])
+        if value == "Joker":
+            return "JK"
+        elif type(value) is str:
+            return "%s%s" % (value[0], suit[0])
+        elif type(value) is int:
+            return "%s%s" % (str(value), suit[0])
+            
 
     def gen_name(self, value, suit):
         """
@@ -255,10 +250,10 @@ class Card(object):
         :returns: a newly constructed name, using the given value & suit.
 
         """
-        if value != "Joker":
-            return "%s of %s" % (str(value), suit)
+        if value == "Joker":
+            return "Joker"
         else:
-            return value
+            return "%s of %s" % (str(value), suit)
 
 #===============================================================================
 # IF '__MAIN__'
