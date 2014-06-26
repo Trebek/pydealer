@@ -2,18 +2,29 @@
 PyDealer: Playing Card Package
 ==============================
 
-A simple package with classes for constructing a ``Deck`` object, of 52 common 
+A simple package for constructing a ``Deck`` object, of 52 common 
 playing cards. Each card is a separate ``Card`` object, with a name, value, 
-suit, and abbreviation. Could possibly be used for a command prompt/console, card-based game.
+suit, and abbreviation. Could possibly be used for a command prompt/console, card-based game, or even a graphical game as well, I suppose.
+
+Attention
+=========
+
+If you are going to make a pull request, please do so on the dev branch, thanks. And make sure you are working on the latest version of the dev branch.
 
 Install/Uninstall with PIP_
 ===========================
 
-Install
--------
+Install Latest Version
+----------------------
 ::
 
     pip install https://github.com/Trebek/pydealer/archive/master.zip
+
+Install Development Version
+---------------------------
+::
+
+    pip install https://github.com/Trebek/pydealer/archive/dev.zip
 
 Uninstall
 ---------

@@ -8,7 +8,7 @@ with open('README.rst') as f:
 
 setup(
     name='pydealer',
-    version='1.1.0',
+    version='1.2.0',
     author='Alex Crawford',
     author_email='kebert406@yahoo.com',
     packages=['pydealer'],
