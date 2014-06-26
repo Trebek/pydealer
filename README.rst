@@ -47,7 +47,7 @@ Make a Deck, Deal Some Cards
     hand = deck.deal(7)
 
     for card in hand:
-        print card.name
+        print card
 
 **Example output:**
 ::
@@ -72,7 +72,7 @@ Peek at Specific Deck Indice
     i = 25
     card = deck.peek(i)
 
-    print card.name
+    print card
 
 **Example output:**
 ::
@@ -94,17 +94,15 @@ Single Card
     deck.shuffle()
 
     name = "Ace of Spades"
-    indices = deck.find(name)
+    i = deck.find(name)
 
-    for i in indices:
-        card_name = deck.peek(i, "name")
-        print "deck.cards[%d] = %s" % (i, card_name)
+    card = deck.peek(i)
+    print "deck.cards[%d] = %s" % (i, card)
 
 **Example output:**
 ::
 
     deck.cards[28] = Ace of Spades
-
 
 List of Cards
 ^^^^^^^^^^^^^
@@ -120,8 +118,8 @@ The list can contain full card names, abbreviations, suits, values, or a mixture
     indices = deck.find(terms)
 
     for i in indices:
-        card_name = deck.peek(i, "name")
-        print "deck.cards[%d] = %s" % (i, card_name)
+        card = deck.peek(i)
+        print "deck.cards[%d] = %s" % (i, card)
 
 **Example output:**
 ::
@@ -139,20 +137,19 @@ Get & Remove Specific Card(s)
 
     import pydealer
 
-    deck = pydealer.Deck()
+    deck = Deck()
     deck.shuffle()
 
     name = "Ace of Spades"
-    cards = deck.get(name)
+    card = deck.get(name)
 
-    for card in cards:
-        print card.name
+    print card
 
-    terms = ["AS", "Queen of Hearts", "2"]
+    terms = ["KD", "Queen of Hearts", "2"]
     cards = deck.get(terms)
 
     for card in cards:
-        print card.name
+        print card
 
 **Example output:**
 ::

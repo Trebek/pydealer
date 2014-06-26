@@ -338,7 +338,6 @@ class Deck(object):
                 got_cards.append(self.cards[item])
 
         for card in got_cards:
-            print card
             self.cards.remove(card)
 
         if len(got_cards) > 1:
