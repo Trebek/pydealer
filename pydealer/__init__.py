@@ -1,1 +1,1 @@
-from pydealer import Deck, Card
+from pydealer import *

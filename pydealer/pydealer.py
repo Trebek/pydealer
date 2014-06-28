@@ -1,8 +1,8 @@
 #===============================================================================
 # PyDealer: Playing Card Package
 #-------------------------------------------------------------------------------
-# Version: 1.2.0
-# Updated: 25-06-2014
+# Version: 1.2.1
+# Updated: 28-06-2014
 # License: MIT
 #===============================================================================
 
@@ -216,7 +216,7 @@ class Deck(object):
         :returns: A str of the names of the cards in the deck.
 
         """
-        card_names = "".join([x.name + "\n" for x in self.cards])
+        card_names = "".join([x.name + "\n" for x in self.cards]).rstrip("\n")
         return '%s' % (card_names)
 
     def build(self, jokers=False, num_jokers=2):
@@ -298,12 +298,14 @@ class Deck(object):
             check_term(x, y) 
         ]
 
-        if len(found_cards) > 1:
-            return found_cards
-        else:
-            return found_cards[0]
+        found_len = len(found_cards)
 
-        # return found_cards
+        if found_len > 1:
+            return found_cards
+        elif found_len > 0:
+            return found_cards[0]
+        else:
+            return None
 
     def get(self, terms):
         """
@@ -332,7 +334,7 @@ class Deck(object):
                             self.cards[i] not in got_cards
                         ]
                     )
-                else:
+                elif indices:
                     got_cards.append(self.cards[indices])
             else:
                 got_cards.append(self.cards[item])
@@ -340,12 +342,14 @@ class Deck(object):
         for card in got_cards:
             self.cards.remove(card)
 
-        if len(got_cards) > 1:
-            return got_cards
-        else:
-            return got_cards[0]
+        got_len = len(got_cards)
 
-        # return got_cards
+        if got_len > 1:
+            return got_cards
+        elif got_len > 0:
+            return got_cards[0]
+        else:
+            return None
 
     def peek(self, indice, ret_val="card"):
         """
@@ -380,10 +384,14 @@ class Deck(object):
             for i in indice:
                 peeked.append(self.cards[i].suit)
 
-        if len(peeked) > 1:
+        peeked_len = len(peeked)
+
+        if peeked_len > 1:
             return peeked
-        else:
+        elif peeked_len > 0:
             return peeked[0]
+        else:
+            return None
 
     def shuffle(self):
         """Shuffles the deck."""

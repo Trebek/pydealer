@@ -2,6 +2,31 @@
 PyDealer Changelog
 ==================
 
+**Changes**
+    Major changes that may break things.
+**Features**
+    New features that usually don't break anything.
+**Refactoring**
+    Changes/improvements to the code that shouldn't break anything.
+**Bugfixes**
+    Smaller bugfixes, fixing broken functionality.
+**Other**
+    Any other changes that may be of note.
+
+v1.2.1 (28-06-2014)
+-------------------
+
+Bugfixes
+^^^^^^^^
+
+- Fixed the methods ``Deck.find``, ``Deck.get``, and ``Deck.peek``, so they don't throw an error when there is nothing to return. They now return ``None`` if nothing is found.
+
+Other
+^^^^^
+
+- Changed ``__init__.py``, so it now imports everything from the module, meaning you can now access the globals constants, and ``check_term``, when importing PyDealer.
+- Stripped the extra "\n" at the end of the str representation of a ``Deck``.
+
 v1.2.0 (25-06-2014)
 -------------------
 
