@@ -8,14 +8,14 @@ with open('README.rst') as f:
 
 setup(
     name='pydealer',
-    version='1.2.1',
+    version='1.2.2',
     author='Alex Crawford',
     author_email='kebert406@yahoo.com',
     packages=['pydealer'],
     scripts=[],
     url='https://github.com/Trebek/pydealer',
     license='LICENSE.txt',
-    description='A package for creating decks of playing cards.',
+    description='A package for constructing decks of playing cards.',
     long_description=README,
     classifiers=[
         "Development Status :: 4 - Beta",

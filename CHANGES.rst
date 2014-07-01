@@ -13,6 +13,21 @@ PyDealer Changelog
 **Other**
     Any other changes that may be of note.
 
+v1.2.2 (30-06-2014)
+-------------------
+
+Bugfixes
+^^^^^^^^
+
+- Fixed ``check_term``, so that it works with Python 3.
+
+Other
+^^^^^
+
+- Filled out the docstring for ``Deck.__init__``.
+- Filled out the docstring for ``Card.__init__``.
+- Fixed a few little errors in the readme.
+
 v1.2.1 (28-06-2014)
 -------------------
 

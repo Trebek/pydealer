@@ -1,8 +1,9 @@
 #===============================================================================
 # PyDealer: Playing Card Package
 #-------------------------------------------------------------------------------
-# Version: 1.2.1
-# Updated: 28-06-2014
+# Version: 1.2.2
+# Updated: 30-06-2014
+# Author: Alex Crawford
 # License: MIT
 #===============================================================================
 
@@ -99,7 +100,17 @@ class Deck(object):
     """Deck class, representing the deck that the cards will be in."""
 
     def __init__(self, jokers=False, num_jokers=2, build=True):
-        """Deck init method."""
+        """
+        Deck constructor method.
+
+        :param jokers: Whether or not to include jokers in the deck.
+        :type jokers: Bool.
+        :param num_jokers: How many jokers to add to the deck.
+        :type num_jokers: Int.
+        :param build: Whether or not to build the deck on instantiation.
+        :type build: Bool.
+
+        """
         self.cards = []
         self.decks_used = 0
 
@@ -284,7 +295,7 @@ class Deck(object):
 
         :param terms: The search terms. Can be card full names, suits, values,
             or abbreviations.
-        :type terms: str|list of str.
+        :type terms: Str|list of str.
 
         :returns: A list of deck indices for the cards matching the given terms, 
             if found.
@@ -358,7 +369,7 @@ class Deck(object):
         :param indice: The deck indice(s) to peek at.
         :type indice: int|list of ints.
         :param ret_value: What to return.
-        :type ret_value: str.
+        :type ret_value: Str.
 
         :returns: The Card|name|suit|value|abbrev. at the given indice.
 
@@ -415,7 +426,15 @@ class Card(object):
     """The Card class, representing a single card."""
 
     def __init__(self, value, suit):
-        """Card constructor method."""
+        """
+        Card constructor method.
+
+        :param value: The card value.
+        :type value: Str.
+        :param suit: The card suit.
+        :type suit: Str.
+
+        """
         self.value = value
         self.suit = str(suit).capitalize()
         self.abbrev = self.gen_abbrev(value, suit)
@@ -481,9 +500,9 @@ class Card(object):
         value, and suit.
 
         :param value: The value to use.
-        :type value: str.
+        :type value: Str.
         :param suit: The suit to use.
-        :type suit: str.
+        :type suit: Str.
 
         :returns: A newly constructed abbreviation, using the given value
             & suit
@@ -502,9 +521,9 @@ class Card(object):
         and suit.
 
         :param value: The value to use.
-        :type value: str.
+        :type value: Str.
         :param suit: The suit to use.
-        :type suit: str.
+        :type suit: Str.
 
         :returns: a newly constructed name, using the given value & suit.
 
@@ -526,15 +545,17 @@ def check_term(card, term):
     :type card: Card.
     :param term: The search term to check for. Can be a card full name, suit, 
         value, or abbreviation.
-    :type terms: str.
+    :type terms: Str.
 
     :returns: True/False, depending on the check.
 
     """
     check_list = [
-        x.lower() for x in
-        card.name, card.suit, card.value, card.abbrev,
-        card.abbrev[0], card.abbrev[1]
+        x.lower() for x in 
+        [
+            card.name, card.suit, card.value, card.abbrev,
+            card.abbrev[0], card.abbrev[1]
+        ]
     ]
 
     term = term.lower()

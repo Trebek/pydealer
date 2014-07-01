@@ -97,12 +97,12 @@ Single Card
     i = deck.find(name)
 
     card = deck.peek(i)
-    print "deck.cards[%d] = %s" % (i, card)
+    print "deck[%d] = %s" % (i, card)
 
 **Example output:**
 ::
 
-    deck.cards[28] = Ace of Spades
+    deck[28] = Ace of Spades
 
 List of Cards
 ^^^^^^^^^^^^^
@@ -144,6 +144,7 @@ Get & Remove Specific Card(s)
     card = deck.get(name)
 
     print card
+    print
 
     terms = ["KD", "Queen of Hearts", "2"]
     cards = deck.get(terms)
@@ -155,6 +156,8 @@ Get & Remove Specific Card(s)
 ::
 
     Ace of Spades
+    
+    King of Diamonds
     Queen of Hearts
     2 of Diamonds
     2 of Clubs
