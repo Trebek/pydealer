@@ -404,9 +404,14 @@ class Deck(object):
         else:
             return None
 
-    def shuffle(self):
-        """Shuffles the deck."""
-        random.shuffle(self.cards)
+    def shuffle(self, times=1):
+        """
+        Shuffles the deck.
+        :param times: The number of times to shuffle the deck.
+        :type times: int.
+        """
+        for _ in range(5):
+            random.shuffle(self.cards)
 
     @property
     def size(self):
