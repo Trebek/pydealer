@@ -20,6 +20,12 @@ Install
 
     pip install pydealer
 
+Update
+------
+::
+
+    pip install pydealer -U
+
 Uninstall
 ---------
 ::

@@ -30,6 +30,7 @@ Changes
 Features
 ^^^^^^^^
 
+- PyDealer is now hosted on the PyPi! Installing just got that much easier.
 - ``Deck``s now store their ``Cards`` in a deque, instead of a list.
 - Added ``Deck.find_list``, and ``Deck.get_list``, for retrieving items matching the terms in a given list.
 - Added a ``sort`` kwarg to ``Deck``, ``Deck.build``, ``Deck.find``, ``Deck.find_list``, ``Deck.get`` and ``Deck.get_list``.
