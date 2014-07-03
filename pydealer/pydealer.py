@@ -2,17 +2,10 @@
 # PyDealer: Playing Card Package
 #-------------------------------------------------------------------------------
 # Version: 1.3.0
-# Updated: 02-07-2014
+# Updated: 03-07-2014
 # Author: Alex Crawford
 # License: MIT
 #===============================================================================
-
-"""
-A simple package with classes for constructing a ``Deck`` instance, of 52 common 
-playing cards. Each card is a separate ``Card`` instance, with a name, value, 
-suit, and abbreviation.
-
-"""
 
 # The MIT License (MIT)
 
@@ -36,10 +29,17 @@ suit, and abbreviation.
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+"""
+A simple package with classes for constructing ``Deck`` instances, of 52 common 
+playing cards. Each card is a separate ``Card`` instance, with a name, value, 
+suit, and abbreviation.
+
+"""
 #===============================================================================
 # Imports
 #===============================================================================
 
+from collections import deque
 import random
 
 try:
@@ -51,8 +51,8 @@ except:
 # Card Data
 #===============================================================================
 
-SUITS = ["Spades", "Hearts", "Diamonds", "Clubs"]
-FACES = ["King", "Queen", "Jack"]
+SUITS = ["Diamonds", "Clubs", "Hearts", "Spades"]
+FACES = ["Jack", "Queen", "King"]
 NUMBERS = ["2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
 #===============================================================================
@@ -132,7 +132,7 @@ class Deck(object):
             Bool.
 
         """
-        self.cards = cards
+        self.cards = deque(cards)
         self.decks_used = 0
 
         if build:
@@ -242,7 +242,7 @@ class Deck(object):
             A string representation of the Deck instance.
 
         """
-        return 'Deck(cards=%r)' % (self.cards)
+        return "Deck(cards=%r)" % (self.cards)
 
     def __setitem__(self, indice, value):
         """
@@ -272,7 +272,7 @@ class Deck(object):
 
         """
         card_names = "".join([x.name + "\n" for x in self.cards]).rstrip("\n")
-        return '%s' % (card_names)
+        return "%s" % (card_names)
 
     def build(self, jokers=False, num_jokers=2, sort=False):
         """
@@ -486,9 +486,30 @@ class Deck(object):
 
         return got_cards
 
-    def shuffle(self):
-        """Shuffles the deck."""
-        random.shuffle(self.cards)
+    def set_cards(self, cards):
+        """
+        Change the Deck's current contents to the given cards.
+
+        :param cards: 
+            The Cards to assign to the deck.
+        :type cards: 
+            List of Cards.
+
+        """
+        self.cards = deque(cards)
+
+    def shuffle(self, times=1):
+        """
+        Shuffles the deck.
+
+        :param time:
+            The number of times to shuffle.
+        :param time:
+            Int.
+
+        """
+        for _ in xrange(times):
+            random.shuffle(self.cards)
 
     @property
     def size(self):
@@ -771,5 +792,5 @@ def sort_cards(cards, method=POKER_RANKS):
 # IF '__MAIN__'
 #===============================================================================
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

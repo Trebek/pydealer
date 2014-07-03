@@ -2,9 +2,9 @@
 PyDealer: Playing Card Package
 ==============================
 
-A simple package for constructing a ``Deck`` object, of 52 common 
-playing cards. Each card is a separate ``Card`` object, with a name, value, 
-suit, and abbreviation. Could possibly be used for a command prompt/console, card-based game, or even a graphical game as well, I suppose.
+A simple package for constructing ``Deck`` instances, of 52 common 
+playing cards. Each card is a separate ``Card`` instance, with a name, value, 
+suit, and abbreviation. Could possibly be used for a CLI card-based game, or even a graphical game as well, I suppose.
 
 Attention
 =========
@@ -18,7 +18,7 @@ Install
 -------
 ::
 
-    pip install https://github.com/Trebek/pydealer/archive/master.zip
+    pip install pydealer
 
 Uninstall
 ---------
@@ -113,7 +113,7 @@ The list can contain full card names, abbreviations, suits, values, or a mixture
 
     for i in indices:
         card = deck[i]
-        print "deck.cards[%d] = %s" % (i, card)
+        print "deck[%d] = %s" % (i, card)
 
 **Example output:**
 ::

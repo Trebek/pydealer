@@ -13,7 +13,7 @@ PyDealer Changelog
 **Other** -- *Won't break things*
     Any other changes that may be of note, such as updating/modifying of documentation.
 
-v1.3.0 (02-07-2014)
+v1.3.0 (03-07-2014)
 -------------------
 
 Changes
@@ -30,16 +30,21 @@ Changes
 Features
 ^^^^^^^^
 
+- ``Deck``s now store their ``Cards`` in a deque, instead of a list.
 - Added ``Deck.find_list``, and ``Deck.get_list``, for retrieving items matching the terms in a given list.
-- Added a ``sort`` kwarg to ``Deck``, ``Deck.build``, ``Deck.find``, and ``Deck.get``.
+- Added a ``sort`` kwarg to ``Deck``, ``Deck.build``, ``Deck.find``, ``Deck.find_list``, ``Deck.get`` and ``Deck.get_list``.
     - ``sort`` is a boolean argument, which, if ``True``, will sort the newly built ``Deck``, or results by poker rank, otherwise they are built/returned in the order they are created/found. Default is ``False``.
 - Added the global function ``compare_decks``, for checking whether two ``Deck`` instances have the same cards (``Card`` suits & values, not ``Card``  instances).
 - Added the global functions ``sort_cards``, and ``sort_card_indices``, for sorting given cards, or deck indices by poker ranks.
+- Added the method ``Deck.set_cards``, to set a ``Deck``'s contents to a given list of cards at any time. You could just do ``Deck.cards = deque([Card, Card, ...])`` as well. This method just handles the extra step of converting a list to a deque.
+- ``Deck.shuffle()`` now takes the argument ``times``, which is the number of times to shuffle.
 
 Refactoring
 ^^^^^^^^^^^
 
+- Changed ``Deck.cards`` to a deque, instead of a list.
 - Tweaked the item retrieval methods ``Deck.find``, and ``Deck.find_list``, so that they use ``enumerate`` in their loops now, instead of getting card indexes using ``self.cards.index(card)``.
+- Changed the ordering of the items in ``FACES``, and ``SUITS``, so that ``Deck``s are sorted by big two ranks by default, when built.
 
 Bugfixes
 ^^^^^^^^
