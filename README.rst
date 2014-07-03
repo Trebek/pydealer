@@ -14,17 +14,11 @@ If you are going to make a pull request, please do so on the dev branch, thanks.
 Install/Uninstall with PIP_
 ===========================
 
-Install Latest Version
-----------------------
+Install
+-------
 ::
 
     pip install https://github.com/Trebek/pydealer/archive/master.zip
-
-Install Development Version
----------------------------
-::
-
-    pip install https://github.com/Trebek/pydealer/archive/dev.zip
 
 Uninstall
 ---------
@@ -60,8 +54,8 @@ Make a Deck, Deal Some Cards
     4 of Clubs
     6 of Hearts
 
-Peek at Specific Deck Indice
-----------------------------
+Peek at a Deck Indice
+---------------------
 ::
 
     import pydealer
@@ -70,7 +64,7 @@ Peek at Specific Deck Indice
     deck.shuffle()
 
     i = 25
-    card = deck.peek(i)
+    card = deck[i]
 
     print card
 
@@ -79,8 +73,8 @@ Peek at Specific Deck Indice
 
     3 of Spades
 
-Find Specific Card(s) Locations
--------------------------------
+Find Specific Card Locations
+----------------------------
 
 You can search using full card names, abbreviations, suits, or values.
 
@@ -96,7 +90,7 @@ Single Card
     name = "Ace of Spades"
     i = deck.find(name)
 
-    card = deck.peek(i)
+    card = deck[i]
     print "deck[%d] = %s" % (i, card)
 
 **Example output:**
@@ -115,10 +109,10 @@ The list can contain full card names, abbreviations, suits, values, or a mixture
     deck.shuffle()
 
     terms = ["AS", "Queen of Hearts", "2"]
-    indices = deck.find(terms)
+    indices = deck.find_list(terms)
 
     for i in indices:
-        card = deck.peek(i)
+        card = deck[i]
         print "deck.cards[%d] = %s" % (i, card)
 
 **Example output:**
@@ -131,8 +125,8 @@ The list can contain full card names, abbreviations, suits, values, or a mixture
     deck.cards[28] = 2 of Clubs
     deck.cards[34] = Ace of Spades
 
-Get & Remove Specific Card(s)
------------------------------
+Get & Remove Specific Cards
+---------------------------
 ::
 
     import pydealer
@@ -144,10 +138,23 @@ Get & Remove Specific Card(s)
     card = deck.get(name)
 
     print card
-    print
+
+**Example output:**
+::
+
+    Ace of Spades
+
+Get & Remove a List of Cards
+----------------------------
+::
+
+    import pydealer
+
+    deck = Deck()
+    deck.shuffle()
 
     terms = ["KD", "Queen of Hearts", "2"]
-    cards = deck.get(terms)
+    cards = deck.get_list(terms)
 
     for card in cards:
         print card
@@ -155,8 +162,6 @@ Get & Remove Specific Card(s)
 **Example output:**
 ::
 
-    Ace of Spades
-    
     King of Diamonds
     Queen of Hearts
     2 of Diamonds

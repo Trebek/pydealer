@@ -1,18 +1,16 @@
 #===============================================================================
 # PyDealer: Playing Card Package
 #-------------------------------------------------------------------------------
-# Version: 1.2.2
-# Updated: 30-06-2014
+# Version: 1.3.0
+# Updated: 02-07-2014
 # Author: Alex Crawford
 # License: MIT
 #===============================================================================
 
 """
-A simple package with classes for constructing a ``Deck`` object, of 52 common 
-playing cards. Each card is a separate ``Card`` object, with a name, value, 
-suit, and abbreviation. Has methods for shuffling the deck, dealing from the 
-deck, peeking at cards in the deck, and finding the locations of all the cards 
-of a given name, abbreviation, value, or suit in the deck.
+A simple package with classes for constructing a ``Deck`` instance, of 52 common 
+playing cards. Each card is a separate ``Card`` instance, with a name, value, 
+suit, and abbreviation.
 
 """
 
@@ -44,13 +42,22 @@ of a given name, abbreviation, value, or suit in the deck.
 
 import random
 
+try:
+    xrange
+except:
+    xrange = range
+
 #===============================================================================
-# Global Constants
+# Card Data
 #===============================================================================
 
 SUITS = ["Spades", "Hearts", "Diamonds", "Clubs"]
 FACES = ["King", "Queen", "Jack"]
 NUMBERS = ["2", "3", "4", "5", "6", "7", "8", "9", "10"]
+
+#===============================================================================
+# Helper Dicts
+#===============================================================================
 
 POKER_RANKS = {
     "Ace": 13,
@@ -67,6 +74,7 @@ POKER_RANKS = {
     "3": 2,
     "2": 1
 }
+
 BIG2_RANKS = {
     "values": POKER_RANKS,
     "suits": {
@@ -76,6 +84,7 @@ BIG2_RANKS = {
         "Diamonds": 1
     }
 }
+
 BLACKJACK_VALS = {
     "Ace": (1, 11),
     "King": 10,
@@ -99,32 +108,47 @@ BLACKJACK_VALS = {
 class Deck(object):
     """Deck class, representing the deck that the cards will be in."""
 
-    def __init__(self, jokers=False, num_jokers=2, build=True):
+    def __init__(
+            self, cards=[], jokers=False, num_jokers=2, build=True, sort=False
+        ):
         """
         Deck constructor method.
 
-        :param jokers: Whether or not to include jokers in the deck.
-        :type jokers: Bool.
-        :param num_jokers: How many jokers to add to the deck.
-        :type num_jokers: Int.
-        :param build: Whether or not to build the deck on instantiation.
-        :type build: Bool.
+        :param jokers: 
+            Whether or not to include jokers in the deck.
+        :type jokers: 
+            Bool.
+        :param num_jokers: 
+            How many jokers to add to the deck.
+        :type num_jokers: 
+            Int.
+        :param build: 
+            Whether or not to build the deck on instantiation.
+        :type build: 
+            Bool.
+        :param sort: 
+            Whether or not to sort the deck, by poker ranks.
+        :type sort: 
+            Bool.
 
         """
-        self.cards = []
+        self.cards = cards
         self.decks_used = 0
 
         if build:
-            self.build(jokers, num_jokers)
+            self.build(jokers, num_jokers, sort)
 
     def __add__(self, other):
         """
         Allows you to add (merge) decks together, with the ``+`` operand.
 
-        :param other: The other deck to add to the deck.
-        :type other: Deck.
+        :param other: 
+            The other Deck to add to the Deck.
+        :type other: 
+            Deck.
 
-        :returns: A new Deck object, with the combined cards.
+        :returns: 
+            A new Deck instance, with the combined cards.
 
         """
         new_deck = Deck(build=False)
@@ -133,23 +157,28 @@ class Deck(object):
 
     def __contains__(self, card):
         """
-        Allows for Card object (not suit & value) inclusion checks.
+        Allows for Card instance (not suit & value) inclusion checks.
 
-        :param card: The Card object to check for.
-        :type card: Card.
+        :param card: 
+            The Card instance to check for.
+        :type card: 
+            Card.
 
-        :returns: Whether or not the Card is in the Deck.
+        :returns: 
+            Whether or not the Card instance is in the Deck.
 
         """
         id_list = [id(x) for x in self.cards]
-        return id(item) in id_list
+        return id(card) in id_list
 
     def __delitem__(self, indice):
         """
-        Allows for deletion of a Card object, using del.
+        Allows for deletion of a Card instance, using del.
 
-        :param indice: The indice to delete.
-        :type indice: int.
+        :param indice: 
+            The indice to delete.
+        :type indice: 
+            Int.
 
         """
         del self.cards[indice]
@@ -158,22 +187,28 @@ class Deck(object):
         """
         Allows for Deck ordering comparisons.
 
-        :param other: The other Deck to compare to.
-        :type other: Deck.
+        :param other: 
+            The other Deck to compare to.
+        :type other: 
+            Deck.
 
-        :returns: Whether or not the decks are in the same order.
+        :returns: 
+            Whether or not the decks are in the same order.
 
         """
-        return (isinstance(other, Deck) and self.cards == other.cards)
+        return (isinstance(other, Deck) and compare_decks(self, other))
 
     def __getitem__(self, indice):
         """
         Allows for getting of cards, using ``Deck[indice]``.
 
-        :param indice: The indice to get.
-        :type indice: int.
+        :param indice: 
+            The indice to get.
+        :type indice: 
+            Int.
 
-        :returns: The Card at the given indice.
+        :returns: 
+            The Card at the given indice.
 
         """
         return self.cards[indice]
@@ -182,7 +217,8 @@ class Deck(object):
         """
         Allows looping through the Deck, using for loops.
 
-        :returns: An iterator of the Cards in the deck.
+        :returns: 
+            An iterator of the Cards in the deck.
 
         """
         for card in self.cards:
@@ -192,7 +228,8 @@ class Deck(object):
         """
         Allows check the deck length, with len.
 
-        :returns: The length of the deck (self.cards).
+        :returns: 
+            The length of the deck (self.cards).
 
         """
         return len(self.cards)
@@ -201,7 +238,8 @@ class Deck(object):
         """
         The repr magic method.
 
-        :returns: A string representation of the Deck object.
+        :returns: 
+            A string representation of the Deck instance.
 
         """
         return 'Deck(cards=%r)' % (self.cards)
@@ -210,12 +248,17 @@ class Deck(object):
         """
         Allows you to assign cards to specific deck indices.
 
-        :param indice: The indice to set.
-        :type indice: int.
-        :param value: The Card to set the indice to.
-        :type value: Card.
+        :param indice: 
+            The indice to set.
+        :type indice: 
+            Int.
+        :param value: 
+            The Card to set the indice to.
+        :type value: 
+            Card.
 
-        :returns: The Card at the given indice.
+        :returns: 
+            The Card at the given indice.
 
         """
         self.cards[indice] = value
@@ -224,53 +267,70 @@ class Deck(object):
         """
         The str magic method.
 
-        :returns: A str of the names of the cards in the deck.
+        :returns: 
+            A str of the names of the cards in the deck.
 
         """
         card_names = "".join([x.name + "\n" for x in self.cards]).rstrip("\n")
         return '%s' % (card_names)
 
-    def build(self, jokers=False, num_jokers=2):
+    def build(self, jokers=False, num_jokers=2, sort=False):
         """
-        Builds a standard 52 card French deck of card objects.
+        Builds a standard 52 card French deck of Card instances.
 
-        :param jokers: Whether or not to include jokers in the deck.
-        :type jokers: bool.
-        :param num_jokers: The number of jokers to include.
-        :type num_jokers: int.
+        :param jokers: 
+            Whether or not to include jokers in the deck.
+        :type jokers: 
+            Bool.
+        :param num_jokers: 
+            The number of jokers to include.
+        :type num_jokers: 
+            Int.
+        :param sort: 
+            Whether or not to sort the deck by poker ranks.
+        :type sort: 
+            Bool.
 
-        :returns: A new deck object.
+        :returns: 
+            A new Deck instance.
 
         """
         self.decks_used += 1
 
         temp_deck = [
-            Card(number, suit) for number in NUMBERS for 
-            suit in SUITS
+            Card(number, suit) for number in NUMBERS for suit in SUITS
         ]
         temp_deck.extend(
-            [
-                Card(face, suit) for face in FACES for 
-                suit in SUITS
-            ]
+            [Card(face, suit) for face in FACES for suit in SUITS]
         )
         temp_deck.extend([Card("Ace", suit) for suit in SUITS])
 
         if jokers:
             temp_deck.extend([Card("Joker", None) for i in xrange(num_jokers)])
 
-        self.cards = temp_deck[::-1]
+        if sort:
+            self.cards = sorted(
+                temp_deck, 
+                key=lambda x: POKER_RANKS[x.value]
+            )
+        else:
+            self.cards = temp_deck
 
     def deal(self, num=1, rebuild=True):
         """
         Returns a list of cards, which are removed from the deck.
 
-        :param num: The number of cards to deal.
-        :type num: int.
-        :param rebuild: Whether or not to rebuild the deck when cards run out.
-        :type rebuild: bool.
+        :param num: 
+            The number of cards to deal.
+        :type num: 
+            Int.
+        :param rebuild: 
+            Whether or not to rebuild the deck when cards run out.
+        :type rebuild: 
+            Bool.
 
-        :returns: A given number of cards from the deck.
+        :returns: 
+            A given number of cards from the deck.
 
         """
         dealt_cards = []
@@ -288,121 +348,143 @@ class Deck(object):
    
         return dealt_cards
 
-    def find(self, terms):
+    def find(self, term, sort=False):
         """
         Searches the deck for cards with a suit, value, name, or
         abbreviation matching the given argument, 'terms'.
 
-        :param terms: The search terms. Can be card full names, suits, values,
-            or abbreviations.
-        :type terms: Str|list of str.
+        :param term: 
+            The search term. Can be a card full name, suit, value,
+            or abbreviation.
+        :type term: 
+            Str.
+        :param sort: 
+            Whether or not to sort the results, by poker ranks.
+        :type sort: 
+            Bool.
 
-        :returns: A list of deck indices for the cards matching the given terms, 
+        :returns: 
+            A list of deck indices for the cards matching the given terms, 
             if found.
 
         """
-        if type(terms) != list:
-            terms = [terms]
-        
-        found_cards = [
-            self.cards.index(x) for x in self.cards for y in terms if 
-            check_term(x, y) 
-        ]
+        found_indices = []
 
-        found_len = len(found_cards)
+        for i, card in enumerate(self.cards):
+            if check_term(card, term):
+                found_indices.append(i)
 
-        if found_len > 1:
-            return found_cards
-        elif found_len > 0:
-            return found_cards[0]
-        else:
-            return None
+        if sort:
+            found_indices = sort_card_indices(found_indices, self)
 
-    def get(self, terms):
+        return found_indices
+
+    def find_list(self, terms, sort=False):
         """
-        Get the specified cards from the deck.
+        Searches the deck for cards with a suit, value, name, or
+        abbreviation matching the given argument, 'terms'.
 
-        :param terms: The search terms. Can be card full names, suits, values,
-            abbreviations, or deck indices.
-        :type terms: str|int|list of str|int.
+        :param terms: 
+            The search terms. Can be card full names, suits, values,
+            or abbreviations.
+        :type terms: 
+            List of str.
+        :param sort: 
+            Whether or not to sort the results, by poker ranks.
+        :type sort: 
+            Bool.
 
-        :returns: A list of the specified cards, if found.
+        :returns: 
+            A list of deck indices for the cards matching the given terms, 
+            if found.
+
+        """
+        found_indices = []
+        
+        for term in terms:
+            for i, card in enumerate(self.cards):
+                if check_term(card, term):
+                    if i not in found_indices:
+                        found_indices.append(i)
+
+        if sort:
+            found_indices = sort_card_indices(found_indices, self)
+
+        return found_indices
+
+    def get(self, term, sort=False):
+        """
+        Get the specified card from the deck.
+
+        :param term: 
+            The search term. Can be a card full name, suit, value,
+            abbreviation, or deck indice.
+        :type term: 
+            Str|int.
+        :param sort: 
+            Whether or not to sort the results, by poker ranks.
+        :type sort: 
+            Bool.
+
+        :returns: 
+            A list of the specified cards, if found.
 
         """
         got_cards = []
 
-        if type(terms) != list:
-            terms = [terms]
+        try:
+            indices = self.find(term)
+            got_cards = [self.cards[i] for i in indices]
+        except:
+            got_cards = [self.cards[term]]
+
+        for card in got_cards:
+            self.cards.remove(card)
+
+        if sort:
+            got_cards = sort_cards(got_cards)
+
+        return got_cards
+
+    def get_list(self, terms, sort=False):
+        """
+        Get the specified cards from the deck.
+
+        :param term: 
+            The search term. Can be a card full name, suit, value,
+            abbreviation, or deck indice.
+        :type term: 
+            List of str|int.
+        :param sort: 
+            Whether or not to sort the results, by poker ranks.
+        :type sort: 
+            Bool.
+
+        :returns: 
+            A list of the specified cards, if found.
+
+        """
+        got_cards = []
             
         for item in terms:
-            if type(item) is not int:
+            try:
                 indices = self.find(item)
-                indices_type = type(indices)
-                if indices_type is list:
-                    got_cards.extend(
-                        [
-                            self.cards[i] for i in indices if 
-                            self.cards[i] not in got_cards
-                        ]
-                    )
-                elif indices:
-                    got_cards.append(self.cards[indices])
-            else:
+                got_cards.extend(
+                    [
+                        self.cards[i] for i in indices if 
+                        self.cards[i] not in got_cards
+                    ]
+                )
+            except:
                 got_cards.append(self.cards[item])
 
         for card in got_cards:
             self.cards.remove(card)
 
-        got_len = len(got_cards)
+        if sort:
+            got_cards = sort_cards(got_cards)
 
-        if got_len > 1:
-            return got_cards
-        elif got_len > 0:
-            return got_cards[0]
-        else:
-            return None
-
-    def peek(self, indice, ret_val="card"):
-        """
-        Peek at the card in the given indice(s) (list index) of the deck.
-
-        :param indice: The deck indice(s) to peek at.
-        :type indice: int|list of ints.
-        :param ret_value: What to return.
-        :type ret_value: Str.
-
-        :returns: The Card|name|suit|value|abbrev. at the given indice.
-
-        """
-        peeked = []
-
-        if type(indice) is not list:
-            indice = [indice]
-
-        if ret_val is "card":
-            for i in indice:
-                peeked.append(self.cards[i])
-        elif ret_val is "name":
-            for i in indice:
-                peeked.append(self.cards[i].name)
-        elif ret_val in ["abbr", "abbrev", "abbreviation"]:
-            for i in indice:
-                peeked.append(self.cards[i].abbrev)
-        elif ret_val in ["val", "value"]:
-            for i in indice:
-                peeked.append(self.cards[i].value)
-        elif ret_val in "suit":
-            for i in indice:
-                peeked.append(self.cards[i].suit)
-
-        peeked_len = len(peeked)
-
-        if peeked_len > 1:
-            return peeked
-        elif peeked_len > 0:
-            return peeked[0]
-        else:
-            return None
+        return got_cards
 
     def shuffle(self):
         """Shuffles the deck."""
@@ -413,7 +495,8 @@ class Deck(object):
         """
         Counts the number of cards currently in the deck.
 
-        :returns: The number of cards in the deck.
+        :returns: 
+            The number of cards in the deck.
 
         """
         return len(self)
@@ -429,10 +512,14 @@ class Card(object):
         """
         Card constructor method.
 
-        :param value: The card value.
-        :type value: Str.
-        :param suit: The card suit.
-        :type suit: Str.
+        :param value: 
+            The card value.
+        :type value: 
+            Str.
+        :param suit: 
+            The card suit.
+        :type suit: 
+            Str.
 
         """
         self.value = value
@@ -444,10 +531,13 @@ class Card(object):
         """
         Allows for Card value/suit equality comparisons.
 
-        :param other: The other card to compare to.
-        :type other: Card.
+        :param other: 
+            The other card to compare to.
+        :type other: 
+            Card.
 
-        :returns: Whether or not the cards are equal.
+        :returns: 
+            Whether or not the cards are equal.
 
         """
         return (
@@ -459,10 +549,13 @@ class Card(object):
         """
         Allows for Card value comparisons. Uses poker ranks.
 
-        :param other: The other card to compare to.
-        :type other: Card.
+        :param other: 
+            The other card to compare to.
+        :type other: 
+            Card.
 
-        :returns: Whether or not self > other.
+        :returns: 
+            Whether or not self > other.
 
         """
         return POKER_RANKS[self.value] > POKER_RANKS[other.value]
@@ -471,7 +564,8 @@ class Card(object):
         """
         The hash magic method.
 
-        :returns: A unique number, or hash for the Card.
+        :returns: 
+            A unique number, or hash for the Card.
 
         """
         return hash((self.value, self.suit))
@@ -480,7 +574,8 @@ class Card(object):
         """
         The repr magic method.
 
-        :returns: A string representation of the Card object.
+        :returns: 
+            A string representation of the Card instance.
 
         """
         return "Card(value=%r, suit=%r)" % (self.value, self.suit)
@@ -489,7 +584,8 @@ class Card(object):
         """
         The str magic method.
 
-        :returns: The card name.
+        :returns: 
+            The card name.
 
         """
         return "%s" % (self.name)
@@ -499,17 +595,22 @@ class Card(object):
         Constructs an abbreviation for the card, using the given 
         value, and suit.
 
-        :param value: The value to use.
-        :type value: Str.
-        :param suit: The suit to use.
-        :type suit: Str.
+        :param value: 
+            The value to use.
+        :type value: 
+            Str.
+        :param suit: 
+            The suit to use.
+        :type suit: 
+            Str.
 
-        :returns: A newly constructed abbreviation, using the given value
+        :returns: 
+            A newly constructed abbreviation, using the given value
             & suit
 
         """
         if value is "Joker":
-            return "JK"
+            return "JKR"
         elif value is "10":
             return "10%s" % (suit[0])
         else:
@@ -520,12 +621,17 @@ class Card(object):
         Constructs a name for the card, using the given value, 
         and suit.
 
-        :param value: The value to use.
-        :type value: Str.
-        :param suit: The suit to use.
-        :type suit: Str.
+        :param value: 
+            The value to use.
+        :type value: 
+            Str.
+        :param suit: 
+            The suit to use.
+        :type suit: 
+            Str.
 
-        :returns: a newly constructed name, using the given value & suit.
+        :returns: 
+            a newly constructed name, using the given value & suit.
 
         """
         if value is "Joker":
@@ -541,20 +647,25 @@ def check_term(card, term):
     """
     Checks a given search term against a given card's name attributes.
 
-    :param card: The card to check.
-    :type card: Card.
-    :param term: The search term to check for. Can be a card full name, suit, 
+    :param card: 
+        The card to check.
+    :type card: 
+        Card.
+    :param term: 
+        The search term to check for. Can be a card full name, suit, 
         value, or abbreviation.
-    :type terms: Str.
+    :type terms: 
+        Str.
 
-    :returns: True/False, depending on the check.
+    :returns: 
+        True/False, depending on the check.
 
     """
     check_list = [
         x.lower() for x in 
         [
             card.name, card.suit, card.value, card.abbrev,
-            card.abbrev[0], card.abbrev[1]
+            card.suit[0], card.value[0]
         ]
     ]
 
@@ -563,7 +674,98 @@ def check_term(card, term):
     for check in check_list:
         if check == term:
             return True
+
     return False
+
+def compare_decks(deck_x, deck_y):
+    """
+    Checks whether two given Decks contain the same cards.
+
+    :param deck_x: 
+        The first deck to check.
+    :type deck_x: 
+        Deck.
+    :param deck_y: 
+        The second deck to check.
+    :type deck_y: 
+        Deck.
+
+    :returns: 
+        True/False, depending on the result.
+
+    """
+    _deck_x = sort_cards(deck_x, method=BIG2_RANKS)
+    _deck_y = sort_cards(deck_y, method=BIG2_RANKS)
+
+    if _deck_x == _deck_y:
+        return True
+
+    return False
+
+def sort_card_indices(indices, deck, method=POKER_RANKS):
+    """
+    Sorts the given Deck indices by poker ranks. Must also supply the Deck
+    instance that the indices are from.
+
+    :param indices: 
+        The indices to sort.
+    :type indices: 
+        List of int.
+    :param deck: 
+        The deck the indices are from.
+    :type deck: 
+        Deck.
+
+    :returns: 
+        The sorted indices.
+
+    """
+    if method is POKER_RANKS:
+        indices = sorted(
+            indices, 
+            key=lambda x: POKER_RANKS[deck[x].value]
+        )
+    elif method is BIG2_RANKS:
+        indices = sorted(
+            indices, 
+            key=lambda x: BIG2_RANKS["suits"][deck[x].suit]
+        )
+        indices = sorted(
+            indices, 
+            key=lambda x: BIG2_RANKS["values"][deck[x].value]
+        )
+
+    return indices
+
+def sort_cards(cards, method=POKER_RANKS):
+    """
+    Sorts the given cards, by poker ranks.
+
+    :param cards: 
+        The cards to sort.
+    :type cards: 
+        List of Cards.
+
+    :returns: 
+        The sorted cards.
+
+    """
+    if method is POKER_RANKS:
+        cards = sorted(
+            cards, 
+            key=lambda x: POKER_RANKS[x.value]
+        )
+    elif method is BIG2_RANKS:
+        cards = sorted(
+            cards, 
+            key=lambda x: BIG2_RANKS["suits"][x.suit]
+        )
+        cards = sorted(
+            cards, 
+            key=lambda x: BIG2_RANKS["values"][x.value]
+        )
+
+    return cards
 
 #===============================================================================
 # IF '__MAIN__'

@@ -2,16 +2,58 @@
 PyDealer Changelog
 ==================
 
-**Changes**
-    Major changes that may break things.
-**Features**
-    New features that usually don't break anything.
-**Refactoring**
-    Changes/improvements to the code that shouldn't break anything.
-**Bugfixes**
+**Changes** -- *Will probably break things*
+    Major changes to the package/code.
+**Features** -- *May or may not break things*
+    New, added features/functionality.
+**Refactoring** -- *Shouldn't break things*
+    Changes/improvements to the code.
+**Bugfixes** -- *Won't break things*
     Smaller bugfixes, fixing broken functionality.
-**Other**
-    Any other changes that may be of note.
+**Other** -- *Won't break things*
+    Any other changes that may be of note, such as updating/modifying of documentation.
+
+v1.3.0 (02-07-2014)
+-------------------
+
+Changes
+^^^^^^^
+
+- Added a couple of extra arguments to ``Deck.__init__``.
+    - ``Deck.__init__`` now takes a list of cards as the first argument, ``cards``, so you can instantiate a deck with a given list of cards.
+    - You can now prevent a ``Deck`` from building itself automatically, on instantiation, with the bool argument ``build``. If ``build=False``, the ``Deck`` skips building.
+- ``Deck.find``, and ``Deck.get`` no longer accept lists of terms, and only accept a single term. I have made separate methods for finding/getting lists of terms (see the features section below).
+    - These methods also only return lists (empty or otherwise) now.
+- Scrapped ``Deck.peek``, because it was pretty much useless.
+- The abbreviation for jokers is now "JKR", instead of "JK".
+
+Features
+^^^^^^^^
+
+- Added ``Deck.find_list``, and ``Deck.get_list``, for retrieving items matching the terms in a given list.
+- Added a ``sort`` kwarg to ``Deck``, ``Deck.build``, ``Deck.find``, and ``Deck.get``.
+    - ``sort`` is a boolean argument, which, if ``True``, will sort the newly built ``Deck``, or results by poker rank, otherwise they are built/returned in the order they are created/found. Default is ``False``.
+- Added the global function ``compare_decks``, for checking whether two ``Deck`` instances have the same cards (``Card`` suits & values, not ``Card``  instances).
+- Added the global functions ``sort_cards``, and ``sort_card_indices``, for sorting given cards, or deck indices by poker ranks.
+
+Refactoring
+^^^^^^^^^^^
+
+- Tweaked the item retrieval methods ``Deck.find``, and ``Deck.find_list``, so that they use ``enumerate`` in their loops now, instead of getting card indexes using ``self.cards.index(card)``.
+
+Bugfixes
+^^^^^^^^
+
+- Fixed ``check_term`` again. Should actually work with 10s now. Really.
+- Added a dirty little try/except fix for the ``xrange`` function, because it doesn't exist in Python 3. If ``xrange`` can't be found, implying the package is being run under Python 3, then Python 3's ``range`` is assigned to the variable ``xrange``, using ``xrange = range``.
+- Changed ``Deck.find``, so that it doesn't return lists with duplicates.
+
+Other
+^^^^^
+
+- Tweaked the function/method docstrings a bit, to try to make them easier to read.
+- Updated the readme.
+- Tweaked the section key at the top of the changelog slightly.
 
 v1.2.2 (30-06-2014)
 -------------------
