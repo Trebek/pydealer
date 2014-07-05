@@ -32,5 +32,6 @@ setup(
     keywords='playing cards deck game french standard 52',
     install_requires=[],
     include_package_data=True,
-    zip_safe=False
+    zip_safe=False,
+    test_suite='tests',
 )
