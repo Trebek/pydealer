@@ -2,18 +2,19 @@
 # PyDealer - Stack Class
 #-------------------------------------------------------------------------------
 # Version: 1.4.0
-# Updated: 03-08-2014
+# Updated: 10-01-2015
 # Author: Alex Crawford
-# License: MIT
+# License: GPLv3
 #===============================================================================
 
 """
-This module contains the Stack class, used for creating Stack instances,
-which are essentially just generic 'card containers', with all of the methods
-you may need to work with the cards they contain. Could be used to represent
-a hand, or a discard pile, etc.
+This module contains the ``Stack`` class, which is the backbone of the PyDealer
+package. A ``Stack`` is essentially just a generic "card container", with all of
+the methods users may need to work with the cards they contain. A ``Stack`` can
+be used as a hand, or a discard pile, etc.
 
 """
+
 
 #===============================================================================
 # Imports
@@ -24,11 +25,13 @@ import random
 
 from pydealer.const import (
     BOTTOM,
+    DEFAULT_RANKS,
     TOP
 )
-from pydealer.utils import (
+from pydealer.tools import (
+    check_sorted,
     check_term,
-    compare_stacks,
+    find_card,
     open_cards,
     random_card,
     save_cards,
@@ -53,45 +56,58 @@ class Stack(object):
 
     :arg list cards:
         A list of cards to be the initial contents of the Stack.
+    :arg dict ranks:
+        If ``sort=True``, The rank dict to reference for sorting.
+        Defaults to ``DEFAULT_RANKS``.
     :arg bool sort:
-        Whether or not to sort the stack, by poker ranks.
+        Whether or not to sort the stack upon instantiation.
 
     """
-    def __init__(self, cards=None, sort=False):
+    def __init__(self, **kwargs):
         """
         Stack constructor method.
 
         :arg list cards:
             A list of cards to be the initial contents of the Stack.
+        :arg dict ranks:
+            If ``sort=True``, The rank dict to reference for sorting.
+            Defaults to ``DEFAULT_RANKS``.
         :arg bool sort:
-            Whether or not to sort the stack, by poker ranks.
+            Whether or not to sort the stack upon instantiation.
 
         """
-        if cards:
-            self.cards = deque(cards)
-        else:
-            self.cards = deque([])
+        self._cards = deque(kwargs.get("cards", []))
+        self.ranks = kwargs.get("ranks", DEFAULT_RANKS)
 
-        if sort:
-            self.sort()
+        self._i = 0
+
+        if kwargs.get("sort"):
+            self.sort(self.ranks)
 
     def __add__(self, other):
         """
-        Allows you to add (merge) Hands together, with the ``+`` operand.
+        Allows users to add (merge) Stack/Deck instances together, with the
+        ``+`` operand. You can also add a list of ``Card`` instances to a
+        Stack/Deck instance.
 
         :arg other:
-            The other ``Stack`` or ``Deck`` to add to the ``Stack``.
+            The other ``Stack``, or ``Deck`` instance, or list of ``Card``
+            instances to add to the ``Stack``/``Deck`` instance.
 
         :returns:
             A new ``Stack`` instance, with the combined cards.
 
         """
-        new_stack = Stack(list(self.cards) + list(other.cards))
+        try:
+            new_stack = Stack(cards=(list(self.cards) + list(other.cards)))
+        except:
+            new_stack = Stack(cards=(list(self.cards) + other))
+
         return new_stack
 
     def __contains__(self, card):
         """
-        Allows for Card instance (not face & suit) inclusion checks.
+        Allows for Card instance (not value & suit) inclusion checks.
 
         :arg Card card:
             The Card instance to check for.
@@ -100,8 +116,7 @@ class Stack(object):
             Whether or not the Card instance is in the Deck.
 
         """
-        id_list = [id(x) for x in self.cards]
-        return id(card) in id_list
+        return id(card) in [id(x) for x in self.cards]
 
     def __delitem__(self, indice):
         """
@@ -116,16 +131,23 @@ class Stack(object):
     def __eq__(self, other):
         """
         Allows for Stack comparisons. Checks to see if the given ``other``
-        contains the same cards (based on face & suit, not instance).
+        contains the same cards, in the same order (based on value & suit,
+        not instance).
 
-        :arg Stack other:
-            The other ``Stack`` to compare to.
+        :arg other:
+            The other ``Stack``/``Deck`` instance or ``list`` to compare to.
 
         :returns:
             ``True`` or ``False``.
 
         """
-        return (isinstance(other, Stack) and compare_stacks(self, other))
+        if len(self.cards) == len(other):
+            for i, card in enumerate(self.cards):
+                if card != other[i]:
+                    return False
+            return True
+        else:
+            return False
 
     def __getitem__(self, key):
         """
@@ -151,17 +173,6 @@ class Stack(object):
         else:
             raise TypeError("Invalid argument type.")
 
-    def __iter__(self):
-        """
-        Allows looping through the Stack, using for loops.
-
-        :returns:
-            An iterator of the cards in the stack.
-
-        """
-        for card in self.cards:
-            yield card
-
     def __len__(self):
         """
         Allows check the Stack length, with len.
@@ -172,19 +183,43 @@ class Stack(object):
         """
         return len(self.cards)
 
+    def __ne__(self, other):
+        """
+        Allows for Stack comparisons. Checks to see if the given ``other``
+        does not contain the same cards, in the same order (based on value &
+        suit, not instance).
+
+        :arg other:
+            The other ``Stack``/``Deck`` instance or ``list`` to compare to.
+
+        :returns:
+            ``True`` or ``False``.
+
+        """
+        if len(self.cards) == len(other):
+            for i, card in enumerate(self.cards):
+                if card != other[i]:
+                    return True
+            return False
+        else:
+            return True
+
     def __repr__(self):
         """
         The repr magic method.
 
         :returns:
-            A string representation of the Heck instance.
+            A representation of the ``Deck`` instance.
 
         """
         return "Stack(cards=%r)" % (self.cards)
 
     def __setitem__(self, indice, value):
         """
-        Allows you to assign cards to specific stack indices.
+        Assign cards to specific stack indices, like a list.
+
+        Example:
+            stack[16] = card_object
 
         :arg int indice:
             The indice to set.
@@ -196,7 +231,7 @@ class Stack(object):
 
     def __str__(self):
         """
-        Allows you to print a human readable representation of the ``Stack``
+        Allows users to print a human readable representation of the ``Stack``
         instance, using ``print``.
 
         :returns:
@@ -206,19 +241,18 @@ class Stack(object):
         card_names = "".join([x.name + "\n" for x in self.cards]).rstrip("\n")
         return "%s" % (card_names)
 
-    def add(self, cards, end=None):
+    def add(self, cards, end=TOP):
         """
         Adds the given list of ``Card`` instances to the top of the stack.
 
         :arg cards:
             The cards to add to the ``Stack``. Can be a single ``Card``
             instance, or a ``list`` of cards.
-        :arg int end:
-            The end of the ``Stack`` to add the cards to. Can be ``0`` (top)
-            or ``1`` (bottom).
+        :arg str end:
+            The end of the ``Stack`` to add the cards to. Can be ``TOP`` ("top")
+            or ``BOTTOM`` ("bottom").
 
         """
-        end = end or TOP
         if end is TOP:
             try:
                 self.cards += cards
@@ -230,7 +264,31 @@ class Stack(object):
             except:
                 self.cards.extendleft([cards])
 
-    def deal(self, num=1, end=0):
+    @property
+    def cards(self):
+        """
+        The cards property.
+
+        :returns:
+            The cards in the Stack/Deck.
+
+        """
+        return self._cards
+
+    @cards.setter
+    def cards(self, items):
+        """
+        The cards property setter. This makes sure that if ``Stack.cards`` is
+        set directly, that the items are in a deque.
+
+        :arg items:
+            The list of Card instances, or a Stack/Deck instance to assign to
+            the Stack/Deck.
+
+        """
+        self._cards = deque(items)
+
+    def deal(self, num=1, end=TOP):
         """
         Returns a list of cards, which are removed from the Stack.
 
@@ -261,31 +319,35 @@ class Stack(object):
                 except:
                     break
 
-            return dealt_cards
+            return Stack(cards=dealt_cards)
         else:
-            return []
+            return Stack()
 
-    def empty(self):
+    def empty(self, return_cards=False):
         """
         Empties the stack, removing all cards from it, and returns them.
 
+        :arg bool return_cards:
+            Whether or not to return the cards.
+
         :returns:
-            A list of all of the cards in the stack.
+            If ``return_cards=True``, a list containing the cards removed
+            from the Stack.
 
         """
-
         cards = list(self.cards)
-        self.cards = deque([])
+        self.cards = []
 
-        return cards
+        if return_cards:
+            return cards
 
     def find(self, term, limit=0, sort=False, ranks=None):
         """
-        Searches the stack for cards with a face, suit, name, or
+        Searches the stack for cards with a value, suit, name, or
         abbreviation matching the given argument, 'term'.
 
         :arg str term:
-            The search term. Can be a card full name, face, suit,
+            The search term. Can be a card full name, value, suit,
             or abbreviation.
         :arg int limit:
             The number of items to retrieve for each term. ``0`` equals
@@ -301,6 +363,7 @@ class Stack(object):
             if found.
 
         """
+        ranks = ranks or self.ranks
         found_indices = []
         count = 0
 
@@ -324,11 +387,11 @@ class Stack(object):
 
     def find_list(self, terms, limit=0, sort=False, ranks=None):
         """
-        Searches the stack for cards with a face, suit, name, or
+        Searches the stack for cards with a value, suit, name, or
         abbreviation matching the given argument, 'terms'.
 
         :arg list terms:
-            The search terms. Can be card full names, suits, faces,
+            The search terms. Can be card full names, suits, values,
             or abbreviations.
         :arg int limit:
             The number of items to retrieve for each term.
@@ -343,6 +406,7 @@ class Stack(object):
             if found.
 
         """
+        ranks = ranks or self.ranks
         found_indices = []
         count = 0
 
@@ -367,79 +431,149 @@ class Stack(object):
 
         return found_indices
 
-    def get(self, term, limit=0, sort=False):
+    def get(self, term, limit=0, sort=False, ranks=None):
         """
         Get the specified card from the stack.
 
         :arg term:
-            The search term. Can be a card full name, face, suit,
+            The search term. Can be a card full name, value, suit,
             abbreviation, or stack indice.
         :arg int limit:
             The number of items to retrieve for each term.
         :arg bool sort:
             Whether or not to sort the results, by poker ranks.
+        :arg dict ranks:
+            The rank dict to reference for sorting. If ``None``, it will
+            default to ``DEFAULT_RANKS``.
 
         :returns:
             A list of the specified cards, if found.
 
         """
+        ranks = ranks or self.ranks
         got_cards = []
 
         try:
             indices = self.find(term, limit=limit)
             got_cards = [self.cards[i] for i in indices]
-            self.cards = deque(
-                [v for i, v in enumerate(self.cards) if
+            self.cards = [v for i, v in enumerate(self.cards) if
                 i not in indices]
-            )
         except:
             got_cards = [self.cards[term]]
-            self.cards = deque(
-                [v for i, v in enumerate(self.cards) if i is not term]
-            )
+            self.cards = [v for i, v in enumerate(self.cards) if i is not term]
 
         if sort:
-            got_cards = sort_cards(got_cards)
+            got_cards = sort_cards(got_cards, ranks)
 
         return got_cards
 
-    def get_list(self, terms, limit=0, sort=False):
+    def get_list(self, terms, limit=0, sort=False, ranks=None):
         """
         Get the specified cards from the stack.
 
         :arg term:
-            The search term. Can be a card full name, face, suit,
+            The search term. Can be a card full name, value, suit,
             abbreviation, or stack indice.
         :arg int limit:
             The number of items to retrieve for each term.
         :arg bool sort:
             Whether or not to sort the results, by poker ranks.
+        :arg dict ranks:
+            The rank dict to reference for sorting. If ``None``, it will
+            default to ``DEFAULT_RANKS``.
 
         :returns:
             A list of the specified cards, if found.
 
         """
+        ranks = ranks or self.ranks
         got_cards = []
 
         try:
             indices = self.find_list(terms, limit=limit)
             got_cards = [self.cards[i] for i in indices if self.cards[i]
                 not in got_cards]
-            self.cards = deque(
-                [v for i, v in enumerate(self.cards) if
+            self.cards = [v for i, v in enumerate(self.cards) if
                 i not in indices]
-            )
         except:
+            indices = []
             for item in terms:
-                got_cards.append(self.cards[item])
-            self.cards = deque(
-                [v for i, v in enumerate(self.cards) if i not in terms]
-            )
+                try:
+                    card = self.cards[item]
+                    if card not in got_cards:
+                        got_cards.append(card)
+                        indices.append(item)
+                except:
+                    indices += self.find(item, limit=limit)
+                    got_cards += [self.cards[i] for i in indices if
+                        self.cards[i] not in got_cards]
+            self.cards = [v for i, v in enumerate(self.cards) if
+                i not in indices]
 
         if sort:
-            got_cards = sort_cards(got_cards)
+            got_cards = sort_cards(got_cards, ranks)
 
         return got_cards
+
+    def insert(self, card, indice=-1):
+        """
+        Insert a given card into the stack at a given indice.
+
+        :arg Card card:
+            The card to insert into the stack.
+        :arg int indice:
+            Where to insert the given card.
+
+        """
+        self_size = len(self.cards)
+
+        if indice in [0, -1]:
+            if indice == -1:
+                self.cards.append(card)
+            else:
+                self.cards.appendleft(card)
+        elif indice != self_size:
+            half_x, half_y = self.split(indice)
+            self.cards = list(half_x.cards) + [card] + list(half_y.cards)
+
+
+    def insert_list(self, cards, indice=-1):
+        """
+        Insert a list of given cards into the stack at a given indice.
+
+        :arg list cards:
+            The list of cards to insert into the stack.
+        :arg int indice:
+            Where to insert the given cards.
+
+        """
+        self_size = len(self.cards)
+
+        if indice in [0, -1]:
+            if indice == -1:
+                self.cards += cards
+            else:
+                self.cards.extendleft(cards)
+        elif indice != self_size:
+            half_x, half_y = self.split(indice)
+            self.cards = list(half_x.cards) + list(cards) + list(half_y.cards)
+
+
+    def is_sorted(self, ranks=None):
+        """
+        Checks whether the stack is sorted.
+
+        :arg dict ranks:
+            The rank dict to reference for checking. If ``None``, it will
+            default to ``DEFAULT_RANKS``.
+
+        :returns:
+            Whether or not the cards are sorted.
+
+        """
+        ranks = ranks or self.ranks
+
+        return check_sorted(self, ranks)
 
     def open_cards(self, filename=None):
         """
@@ -451,7 +585,7 @@ class Stack(object):
             month, and day. For example, "cards-20140711.txt".
 
         """
-        self.cards = deque(open_cards(filename))
+        self.cards = open_cards(filename)
 
     def random_card(self, remove=False):
         """
@@ -470,7 +604,7 @@ class Stack(object):
     def reverse(self):
         """Reverse the order of the Stack in place."""
 
-        self.cards = deque(self[::-1])
+        self.cards = self[::-1]
 
     def save_cards(self, filename=None):
         """
@@ -492,17 +626,14 @@ class Stack(object):
             The Cards to assign to the stack.
 
         """
-        self.cards = deque(cards)
+        self.cards = cards
 
     def shuffle(self, times=1):
         """
         Shuffles the Stack.
 
         .. note::
-            Shuffling multiple times can actually lead to less random ordering.
-
-            Also, shuffling large numbers of cards (100,000+) may take a
-            a while.
+            Shuffling large numbers of cards (100,000+) may take a while.
 
         :arg int times:
             The number of times to shuffle.
@@ -527,13 +658,15 @@ class Stack(object):
         Sorts the stack, either by poker ranks, or big two ranks.
 
         :arg dict ranks:
-            The ranks to reference for sorting order.
+            The rank dict to reference for sorting. If ``None``, it will
+            default to ``DEFAULT_RANKS``.
 
         :returns:
             The sorted cards.
 
         """
-        self.cards = deque(sort_cards(self.cards, ranks))
+        ranks = ranks or self.ranks
+        self.cards = sort_cards(self.cards, ranks)
 
     def split(self, indice=None):
         """
@@ -551,19 +684,19 @@ class Stack(object):
         self_size = self.size
         if self_size > 1:
             if not indice:
-                mid = self_size / 2
-                return Stack(self[0:mid]), Stack(self[mid::])
+                mid = self_size // 2
+                return Stack(cards=self[0:mid]), Stack(cards=self[mid::])
             else:
-                return Stack(self[0:indice]), Stack(self[indice::])
+                return Stack(cards=self[0:indice]), Stack(cards=self[indice::])
         else:
-            return Stack(self), Stack()
+            return Stack(cards=self.cards), Stack()
 
 
 #===============================================================================
 # Helper Functions
 #===============================================================================
 
-def convert(deck):
+def convert_to_stack(deck):
     """
     Convert a ``Deck`` to a ``Stack``.
 

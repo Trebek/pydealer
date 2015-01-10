@@ -2,16 +2,17 @@
 # PyDealer - Card Class
 #-------------------------------------------------------------------------------
 # Version: 1.4.0
-# Updated: 03-08-2014
+# Updated: 10-01-2015
 # Author: Alex Crawford
-# License: MIT
+# License: GPLv3
 #===============================================================================
 
 """
-This module contains the Card class, used for creating Card instances. Each
-Card instance represents a single playing card, of a given face and suit.
+This module contains the ``Card`` class. Each ``Card`` instance represents a
+single playing card, of a given value and suit.
 
 """
+
 
 #===============================================================================
 # Imports
@@ -28,30 +29,30 @@ class Card(object):
     """
     The Card class, each instance representing a single playing card.
 
-    :arg str face:
-        The card face.
+    :arg str value:
+        The card value.
     :arg str suit:
         The card suit.
 
     """
-    def __init__(self, face, suit):
+    def __init__(self, value, suit):
         """
         Card constructor method.
 
-        :arg str face:
-            The card face.
+        :arg str value:
+            The card value.
         :arg str suit:
             The card suit.
 
         """
-        self.face = face
-        self.suit = str(suit).capitalize()
-        self.abbrev = card_abbrev(face, suit)
-        self.name = card_name(face, suit)
+        self.value = str(value).capitalize()
+        self.suit = str(suit).capitalize() if suit else suit
+        self.abbrev = card_abbrev(self.value, self.suit)
+        self.name = card_name(self.value, self.suit)
 
     def __eq__(self, other):
         """
-        Allows for Card face/suit equality comparisons.
+        Allows for Card value/suit equality comparisons.
 
         :arg Card other:
             The other card to compare to.
@@ -61,13 +62,13 @@ class Card(object):
 
         """
         return (
-            isinstance(other, Card) and self.face == other.face and
+            isinstance(other, Card) and self.value == other.value and
             self.suit == other.suit
         )
 
     def __ne__(self, other):
         """
-        Allows for Card face/suit equality comparisons.
+        Allows for Card value/suit equality comparisons.
 
         :arg Card other:
             The other card to compare to.
@@ -77,7 +78,7 @@ class Card(object):
 
         """
         return (
-            isinstance(other, Card) and self.face != other.face and
+            isinstance(other, Card) and self.value != other.value or
             self.suit != other.suit
         )
 
@@ -94,11 +95,11 @@ class Card(object):
         """
         if isinstance(other, Card):
             return (
-                DEFAULT_RANKS["faces"][self.face] >
-                DEFAULT_RANKS["faces"][other.face] or
+                DEFAULT_RANKS["values"][self.value] >
+                DEFAULT_RANKS["values"][other.value] or
                 (
-                    DEFAULT_RANKS["faces"][self.face] >=
-                    DEFAULT_RANKS["faces"][other.face] and
+                    DEFAULT_RANKS["values"][self.value] >=
+                    DEFAULT_RANKS["values"][other.value] and
                     DEFAULT_RANKS["suits"][self.suit] >=
                     DEFAULT_RANKS["suits"][other.suit]
                 )
@@ -119,11 +120,11 @@ class Card(object):
         """
         if isinstance(other, Card):
             return (
-                DEFAULT_RANKS["faces"][self.face] >
-                DEFAULT_RANKS["faces"][other.face] or
+                DEFAULT_RANKS["values"][self.value] >
+                DEFAULT_RANKS["values"][other.value] or
                 (
-                    DEFAULT_RANKS["faces"][self.face] >=
-                    DEFAULT_RANKS["faces"][other.face] and
+                    DEFAULT_RANKS["values"][self.value] >=
+                    DEFAULT_RANKS["values"][other.value] and
                     DEFAULT_RANKS["suits"][self.suit] >
                     DEFAULT_RANKS["suits"][other.suit]
                 )
@@ -139,7 +140,7 @@ class Card(object):
             A unique number, or hash for the Card.
 
         """
-        return hash((self.face, self.suit))
+        return hash((self.value, self.suit))
 
     def __repr__(self):
         """
@@ -149,7 +150,7 @@ class Card(object):
             A string representation of the Card instance.
 
         """
-        return "Card(face=%r, suit=%r)" % (self.face, self.suit)
+        return "Card(value=%r, suit=%r)" % (self.value, self.suit)
 
     def __str__(self):
         """
@@ -179,13 +180,13 @@ class Card(object):
         if isinstance(other, Card):
             if ranks.get("suits"):
                 return (
-                    ranks["faces"][self.face] ==
-                    ranks["faces"][other.face] and
+                    ranks["values"][self.value] ==
+                    ranks["values"][other.value] and
                     ranks["suits"][self.suit] ==
                     ranks["suits"][other.suit]
                 )
             else:
-                return ranks[self.face] == ranks[other.face]
+                return ranks[self.value] == ranks[other.value]
         else:
             return False
 
@@ -208,17 +209,17 @@ class Card(object):
         if isinstance(other, Card):
             if ranks.get("suits"):
                 return (
-                    ranks["faces"][self.face] >
-                    ranks["faces"][other.face] or
+                    ranks["values"][self.value] >
+                    ranks["values"][other.value] or
                     (
-                        ranks["faces"][self.face] >=
-                        ranks["faces"][other.face] and
+                        ranks["values"][self.value] >=
+                        ranks["values"][other.value] and
                         ranks["suits"][self.suit] >=
                         ranks["suits"][other.suit]
                     )
                 )
             else:
-                return ranks[self.face] >= ranks[other.face]
+                return ranks[self.value] >= ranks[other.value]
         else:
             return False
 
@@ -240,17 +241,17 @@ class Card(object):
         if isinstance(other, Card):
             if ranks.get("suits"):
                 return (
-                    ranks["faces"][self.face] >
-                    ranks["faces"][other.face] or
+                    ranks["values"][self.value] >
+                    ranks["values"][other.value] or
                     (
-                        ranks["faces"][self.face] >=
-                        ranks["faces"][other.face] and
+                        ranks["values"][self.value] >=
+                        ranks["values"][other.value] and
                         ranks["suits"][self.suit] >
                         ranks["suits"][other.suit]
                     )
                 )
             else:
-                return ranks[self.face] > ranks[other.face]
+                return ranks[self.value] > ranks[other.value]
         else:
             return False
 
@@ -273,17 +274,17 @@ class Card(object):
         if isinstance(other, Card):
             if ranks.get("suits"):
                 return (
-                    ranks["faces"][self.face] <=
-                    ranks["faces"][other.face] or
+                    ranks["values"][self.value] <=
+                    ranks["values"][other.value] or
                     (
-                        ranks["faces"][self.face] <=
-                        ranks["faces"][other.face] and
+                        ranks["values"][self.value] <=
+                        ranks["values"][other.value] and
                         ranks["suits"][self.suit] <=
                         ranks["suits"][other.suit]
                     )
                 )
             else:
-                return ranks[self.face] <= ranks[other.face]
+                return ranks[self.value] <= ranks[other.value]
         else:
             return False
 
@@ -305,17 +306,17 @@ class Card(object):
         if isinstance(other, Card):
             if ranks.get("suits"):
                 return (
-                    ranks["faces"][self.face] <
-                    ranks["faces"][other.face] or
+                    ranks["values"][self.value] <
+                    ranks["values"][other.value] or
                     (
-                        ranks["faces"][self.face] <=
-                        ranks["faces"][other.face] and
+                        ranks["values"][self.value] <=
+                        ranks["values"][other.value] and
                         ranks["suits"][self.suit] <
                         ranks["suits"][other.suit]
                     )
                 )
             else:
-                return ranks[self.face] < ranks[other.face]
+                return ranks[self.value] < ranks[other.value]
         else:
             return False
 
@@ -337,13 +338,13 @@ class Card(object):
         if isinstance(other, Card):
             if ranks.get("suits"):
                 return (
-                    ranks["faces"][self.face] !=
-                    ranks["faces"][other.face] or
+                    ranks["values"][self.value] !=
+                    ranks["values"][other.value] or
                     ranks["suits"][self.suit] !=
                     ranks["suits"][other.suit]
                 )
             else:
-                return ranks[self.face] != ranks[other.face]
+                return ranks[self.value] != ranks[other.value]
         else:
             return False
 
@@ -352,44 +353,44 @@ class Card(object):
 # Helper Functions
 #===============================================================================
 
-def card_abbrev(face, suit):
+def card_abbrev(value, suit):
     """
     Constructs an abbreviation for the card, using the given
-    face, and suit.
+    value, and suit.
 
-    :arg str face:
-        The face to use.
+    :arg str value:
+        The value to use.
     :arg str suit:
         The suit to use.
 
     :returns:
-        A newly constructed abbreviation, using the given face
+        A newly constructed abbreviation, using the given value
         & suit
 
     """
-    if face is "Joker":
+    if value == "Joker":
         return "JKR"
-    elif face is "10":
+    elif value == "10":
         return "10%s" % (suit[0])
     else:
-        return "%s%s" % (face[0], suit[0])
+        return "%s%s" % (value[0], suit[0])
 
 
-def card_name(face, suit):
+def card_name(value, suit):
     """
-    Constructs a name for the card, using the given face,
+    Constructs a name for the card, using the given value,
     and suit.
 
-    :arg str face:
-        The face to use.
+    :arg str value:
+        The value to use.
     :arg str suit:
         The suit to use.
 
     :returns:
-        A newly constructed name, using the given face & suit.
+        A newly constructed name, using the given value & suit.
 
     """
-    if face is "Joker":
+    if value == "Joker":
         return "Joker"
     else:
-        return "%s of %s" % (face, suit)
+        return "%s of %s" % (value, suit)

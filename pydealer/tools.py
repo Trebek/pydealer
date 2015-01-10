@@ -1,18 +1,19 @@
 #===============================================================================
-# PyDealer - Utility Functions
+# PyDealer - Tools
 #-------------------------------------------------------------------------------
 # Version: 1.4.0
-# Updated: 03-08-2014
+# Updated: 10-01-2015
 # Author: Alex Crawford
-# License: MIT
+# License: GPLv3
 #===============================================================================
 
 """
-These are the utility functions, which are used by the classes in the PyDealer
-package. All of them can also be used on their own as well though, which is
-why I have given them their own module.
+The tools module contains functions for working with sequences of cards, some
+of which are used by the classes in the PyDealer package, such as the functions
+``build_cards``, ``sort_cards``, and ``check_term`` for example.
 
 """
+
 
 #===============================================================================
 # Imports
@@ -23,10 +24,8 @@ import time
 
 from pydealer.card import Card
 from pydealer.const import (
-    BIG2_RANKS,
     DEFAULT_RANKS,
-    FACES,
-    POKER_RANKS,
+    VALUES,
     SUITS
 )
 
@@ -36,11 +35,12 @@ try:
 except:
     xrange = range
 
+
 #===============================================================================
-# Functions
+# Utility Functions
 #===============================================================================
 
-def build_cards(jokers=False, num_jokers=2):
+def build_cards(jokers=False, num_jokers=0):
     """
     Builds a list containing a full French deck of 52 Card instances. The
     cards are sorted according to ``DEFAULT_RANKS``.
@@ -57,40 +57,14 @@ def build_cards(jokers=False, num_jokers=2):
         A list containing a full French deck of 52 Card instances.
 
     """
-    new_deck = [Card(face, suit) for face in FACES for suit in SUITS]
+    new_deck = []
 
     if jokers:
         new_deck += [Card("Joker", None) for i in xrange(num_jokers)]
 
+    new_deck += [Card(value, suit) for value in VALUES for suit in SUITS]
+
     return new_deck
-
-
-def check_term(card, term):
-    """
-    Checks a given search term against a given card's name attributes.
-
-    :arg Card card:
-        The card to check.
-    :arg str term:
-        The search term to check for. Can be a card full name, suit,
-        face, or abbreviation.
-
-    :returns:
-        ``True`` or ``False``.
-
-    """
-    check_list = [
-        x.lower() for x in [card.name, card.suit, card.face, card.abbrev,
-        card.suit[0], card.face[0]]
-    ]
-
-    term = term.lower()
-
-    for check in check_list:
-        if check == term:
-            return True
-
-    return False
 
 
 def check_sorted(cards, ranks=None):
@@ -109,8 +83,6 @@ def check_sorted(cards, ranks=None):
     """
     ranks = ranks or DEFAULT_RANKS
 
-    cards = [x for x in cards]
-
     sorted_cards = sort_cards(cards, ranks)
 
     if cards == sorted_cards or cards[::-1] == sorted_cards:
@@ -119,10 +91,40 @@ def check_sorted(cards, ranks=None):
         return False
 
 
-def compare_stacks(cards_x, cards_y, sorted=False, ranks=None):
+def check_term(card, term):
+    """
+    Checks a given search term against a given card's full name, suit,
+    value, and abbreviation.
+
+    :arg Card card:
+        The card to check.
+    :arg str term:
+        The search term to check for. Can be a card full name, suit,
+        value, or abbreviation.
+
+    :returns:
+        ``True`` or ``False``.
+
+    """
+    check_list = [
+        x.lower() for x in [card.name, card.suit, card.value, card.abbrev,
+        card.suit[0], card.value[0]]
+    ]
+
+    term = term.lower()
+
+    for check in check_list:
+        if check == term:
+            return True
+
+    return False
+
+
+def compare_stacks(cards_x, cards_y, sorted=False):
     """
     Checks whether two given ``Stack``, ``Deck``, or ``list`` instances,
-    contain the same cards (based on face & suit, not instance).
+    contain the same cards (based on value & suit, not instance). Does not
+    take into account the ordering.
 
     :arg cards_x:
         The first stack to check. Can be a ``Stack``, ``Deck``, or ``list``
@@ -133,9 +135,6 @@ def compare_stacks(cards_x, cards_y, sorted=False, ranks=None):
     :arg bool sorted:
         Whether or not the cards are already sorted. If ``True``, then
         ``compare_stacks`` will skip the sorting process.
-    :arg dict ranks:
-        The rank dict to reference for sorting. If ``None``, it will default
-        to ``DEFAULT_RANKS``.
 
     :returns:
         ``True`` or ``False``.
@@ -143,8 +142,8 @@ def compare_stacks(cards_x, cards_y, sorted=False, ranks=None):
     """
     if len(cards_x) == len(cards_y):
         if not sorted:
-            cards_x = sort_cards(cards_x, ranks)
-            cards_y = sort_cards(cards_y, ranks)
+            cards_x = sort_cards(cards_x, DEFAULT_RANKS)
+            cards_y = sort_cards(cards_y, DEFAULT_RANKS)
         for i, c in enumerate(cards_x):
             if c != cards_y[i]:
                 return False
@@ -155,13 +154,13 @@ def compare_stacks(cards_x, cards_y, sorted=False, ranks=None):
 
 def find_card(cards, term, limit=0, sort=False, ranks=None):
     """
-    Searches the given cards for cards with a face, suit, name, or
+    Searches the given cards for cards with a value, suit, name, or
     abbreviation matching the given argument, ``term``.
 
     :arg cards:
         The cards to search. Can be a ``Stack``, ``Deck`` or ``list``.
     :arg str term:
-        The search term. Can be a card full name, face, suit,
+        The search term. Can be a card full name, value, suit,
         or abbreviation.
     :arg int limit:
         The number of items to retrieve for each term.
@@ -200,16 +199,16 @@ def find_card(cards, term, limit=0, sort=False, ranks=None):
 
 def find_list(cards, terms, limit=0, sort=False, ranks=None):
     """
-    Searches the given cards for cards with a face, suit, name, or
+    Searches the given cards for cards with a value, suit, name, or
     abbreviation matching the given argument, ``terms``.
 
     :arg cards:
         The cards to search. Can be a ``Stack``, ``Deck`` or ``list``.
     :arg list terms:
-        The search terms. Can be card full names, suits, faces,
+        The search terms. Can be card full names, suits, values,
         or abbreviations.
     :arg int limit:
-        The number of items to retrieve for each term.
+        The number of items to retrieve for each term. 0 == no limit.
     :arg bool sort:
         Whether or not to sort the results, by poker ranks.
     :arg dict ranks:
@@ -246,19 +245,20 @@ def find_list(cards, terms, limit=0, sort=False, ranks=None):
     return found_indices
 
 
-def get_card(cards, term, limit=0, sort=False):
+def get_card(cards, term, limit=0, sort=False, ranks=None):
     """
     Get the specified card from the stack.
 
     :arg cards:
         The cards to get from. Can be a ``Stack``, ``Deck`` or ``list``.
-    :arg term:
-        The search term. Can be a card full name, face, suit,
-        abbreviation, or stack indice.
+    :arg str term:
+        The card's full name, value, suit, abbreviation, or stack indice.
     :arg int limit:
         The number of items to retrieve for each term.
     :arg bool sort:
         Whether or not to sort the results, by poker ranks.
+    :arg dict ranks:
+        If ``sort=True``, the rank dict to refer to for sorting.
 
     :returns:
         A copy of the given cards, with the found cards removed, and a list
@@ -281,19 +281,21 @@ def get_card(cards, term, limit=0, sort=False):
     return cards, got_cards
 
 
-def get_list(cards, terms, limit=0, sort=False):
+def get_list(cards, terms, limit=0, sort=False, ranks=None):
     """
     Get the specified cards from the stack.
 
     :arg cards:
         The cards to get from. Can be a ``Stack``, ``Deck`` or ``list``.
-    :arg term:
-        The search term. Can be a card full name, face, suit,
-        abbreviation, or stack indice.
+    :arg list terms:
+        A list of card's full names, values, suits, abbreviations, or stack
+        indices.
     :arg int limit:
         The number of items to retrieve for each term.
     :arg bool sort:
         Whether or not to sort the results, by poker ranks.
+    :arg dict ranks:
+        If ``sort=True``, the rank dict to refer to for sorting.
 
     :returns:
         A list of the specified cards, if found.
@@ -307,12 +309,21 @@ def get_list(cards, terms, limit=0, sort=False):
             not in got_cards]
         cards = [v for i, v in enumerate(cards) if i not in indices]
     except:
+        indices = []
         for item in terms:
-            got_cards.append(cards[item])
-        cards = [v for i, v in enumerate(cards) if i not in terms]
+            try:
+                card = cards[item]
+                if card not in got_cards:
+                    got_cards.append(card)
+                    indices.append(item)
+            except:
+                indices += find_card(cards, item, limit=limit)
+                got_cards += [cards[i] for i in indices if
+                    cards[i] not in got_cards]
+        cards = [v for i, v in enumerate(cards) if i not in indices]
 
     if sort:
-        got_cards = sort_cards(got_cards)
+        got_cards = sort_cards(got_cards, ranks)
 
     return cards, got_cards
 
@@ -325,6 +336,9 @@ def open_cards(filename=None):
         The filename of the deck file to open. If no filename given,
         defaults to "cards-YYYYMMDD.txt", where "YYYYMMDD" is the year, month,
         and day. For example, "cards-20140711.txt".
+
+    :returns:
+        The opened cards, as a list.
 
     """
     filename = filename or "cards-%s.txt" % (time.strftime("%Y%m%d"))
@@ -377,7 +391,7 @@ def save_cards(cards, filename=None):
     filename = filename or "cards-%s.txt" % (time.strftime("%Y%m%d"))
 
     with open(filename, "w") as deck_file:
-        card_reprs = ["%s %s\n" % (card.face, card.suit) for card in cards]
+        card_reprs = ["%s %s\n" % (card.value, card.suit) for card in cards]
         card_reprs[-1] = card_reprs[-1].rstrip("\n")
         for card in card_reprs:
             deck_file.write(card)
@@ -394,8 +408,8 @@ def sort_card_indices(cards, indices, ranks=None):
     :arg list indices:
         The indices to sort.
     :arg dict ranks:
-        The ranks to reference for sorting order. Defaults to
-        DEFAULT_RANKS
+        The rank dict to reference for sorting. If ``None``, it will
+        default to ``DEFAULT_RANKS``.
 
     :returns:
         The sorted indices.
@@ -406,16 +420,13 @@ def sort_card_indices(cards, indices, ranks=None):
     if ranks.get("suits"):
         indices = sorted(
             indices,
-            key=lambda x: ranks["suits"][cards[x].suit]
+            key=lambda x: ranks["suits"][cards[x].suit] if
+                cards[x].suit != None else 0
         )
+    if ranks.get("values"):
         indices = sorted(
             indices,
-            key=lambda x: ranks["faces"][cards[x].face]
-        )
-    else:
-        indices = sorted(
-            indices,
-            key=lambda x: ranks[cards[x].face]
+            key=lambda x: ranks["values"][cards[x].value]
         )
 
     return indices
@@ -427,12 +438,9 @@ def sort_cards(cards, ranks=None):
 
     :arg cards:
         The cards to sort.
-    :type cards:
-        List of Cards.
-    :arg ranks:
-        The ranks to reference for sorting order. Defaults to DEFAULT_RANKS.
-    :type ranks:
-        Str.
+    :arg dict ranks:
+        The rank dict to reference for sorting. If ``None``, it will
+        default to ``DEFAULT_RANKS``.
 
     :returns:
         The sorted cards.
@@ -443,16 +451,12 @@ def sort_cards(cards, ranks=None):
     if ranks.get("suits"):
         cards = sorted(
             cards,
-            key=lambda x: ranks["suits"][x.suit]
+            key=lambda x: ranks["suits"][x.suit] if x.suit != None else 0
         )
+    if ranks.get("values"):
         cards = sorted(
             cards,
-            key=lambda x: ranks["faces"][x.face]
-        )
-    else:
-        cards = sorted(
-            cards,
-            key=lambda x: ranks[x.face]
+            key=lambda x: ranks["values"][x.value]
         )
 
     return cards

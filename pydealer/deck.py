@@ -2,18 +2,18 @@
 # PyDealer - Deck Class
 #-------------------------------------------------------------------------------
 # Version: 1.4.0
-# Updated: 03-08-2014
+# Updated: 10-01-2015
 # Author: Alex Crawford
-# License: MIT
+# License: GPLv3
 #===============================================================================
 
 """
-This module contains the Deck class, used for creating Deck instances. Each
-instance contains a full, 52 card French deck of playing cards. The Deck class
-is basically just a kind of Stack, with a few extra methods, and is therefore a
-subclass of Stack.
+This module contains the ``Deck`` class. Each ``Deck`` instance contains a full,
+52 card French deck of playing cards upon instantiation. The ``Deck`` class is
+a subclass of the ``Stack`` class, with a few extra/differing methods.
 
 """
+
 
 #===============================================================================
 # Imports
@@ -23,13 +23,11 @@ from collections import deque
 
 from pydealer.const import (
     BOTTOM,
+    DEFAULT_RANKS,
     TOP
 )
 from pydealer.stack import Stack
-from pydealer.utils import (
-    build_cards,
-    compare_stacks,
-)
+from pydealer.tools import build_cards
 
 # Dirty little try/except, to make PyDealer work with Python 3.
 try:
@@ -48,6 +46,10 @@ class Deck(Stack):
     a sublcass of Stack, sharing all of the same methods, in addition to a
     couple of others you would expect a deck class to have.
 
+    .. warning::
+        At the moment, adding Jokers may cause some (most) functions/methods
+        to throw errors.
+
     :arg cards:
         A list of cards to be the initial contents of the Deck. If provided,
         the deck will not automatically build a new deck. Can be a ``Stack``,
@@ -58,33 +60,32 @@ class Deck(Stack):
         How many jokers to add to the deck.
     :arg bool build:
         Whether or not to build the deck on instantiation.
+    :arg bool rebuild:
+        Whether or not to rebuild the deck when it runs out of
+        cards due to dealing.
+    :arg bool re_shuffle:
+        Whether or not to shuffle the deck after rebuilding.
+    :arg dict ranks:
+        The rank dict that will be referenced by the sorting
+        methods etc. Defaults to ``DEFAULT_RANKS``
 
     """
-    def __init__(self, cards=None, jokers=False, num_jokers=2, build=True):
+    def __init__(self, **kwargs):
         """
         Deck constructor method.
 
-        :arg cards:
-            A list of cards to be the initial contents of the Deck. If
-            provided, the deck will not automatically build a new deck.
-            Can be a ``Stack``, ``Deck``, or ``list`` instance.
-        :arg bool jokers:
-            Whether or not to include jokers in the deck.
-        :arg int num_jokers:
-            How many jokers to add to the deck.
-        :arg bool build:
-            Whether or not to build the deck on instantiation.
-
         """
-        if cards:
-            self.cards = deque(cards)
-        else:
-            self.cards = deque([])
+        self._cards = deque(kwargs.get("cards", []))
 
+        self.jokers = kwargs.get("jokers", False)
+        self.num_jokers = kwargs.get("num_jokers", 0)
+        self.rebuild = kwargs.get("rebuild", False)
+        self.re_shuffle = kwargs.get("re_shuffle", False)
+        self.ranks = kwargs.get("ranks", DEFAULT_RANKS)
         self.decks_used = 0
 
-        if build and not cards:
-            self.build(jokers, num_jokers)
+        if kwargs.get("build", True):
+            self.build()
 
     def __add__(self, other):
         """
@@ -98,22 +99,13 @@ class Deck(Stack):
             A new Deck instance, with the combined cards.
 
         """
-        new_deck = Deck(list(self.cards) + list(other.cards))
+        try:
+            new_deck = Deck(cards=(list(self.cards) + list(other.cards)),
+                build=False)
+        except:
+            new_deck = Deck(cards=list(self.cards) + other, build=False)
 
         return new_deck
-
-    def __eq__(self, other):
-        """
-        Allows for Deck comparisons.
-
-        :arg Deck other:
-            The other ``Deck`` instance to compare to.
-
-        :returns:
-            Whether or not the decks contain the same cards.
-
-        """
-        return (isinstance(other, Deck) and compare_stacks(self, other))
 
     def __repr__(self):
         """
@@ -125,7 +117,7 @@ class Deck(Stack):
         """
         return "Deck(cards=%r)" % (self.cards)
 
-    def build(self, jokers=False, num_jokers=2):
+    def build(self, jokers=False, num_jokers=0):
         """
         Builds a standard 52 card French deck of Card instances.
 
@@ -135,11 +127,14 @@ class Deck(Stack):
             The number of jokers to include.
 
         """
+        jokers = jokers or self.jokers
+        num_jokers = num_jokers or self.num_jokers
+
         self.decks_used += 1
 
-        self.cards = deque(build_cards(jokers, num_jokers))
+        self.cards += build_cards(jokers, num_jokers)
 
-    def deal(self, num=1, rebuild=True, shuffle=True, end=0):
+    def deal(self, num=1, rebuild=False, shuffle=False, end=TOP):
         """
         Returns a list of cards, which are removed from the deck.
 
@@ -149,41 +144,54 @@ class Deck(Stack):
             Whether or not to rebuild the deck when cards run out.
         :arg bool shuffle:
             Whether or not to shuffle on rebuild.
-        :arg int end:
-            Which end to deal from. Can be ``0`` (top) or ``1`` (bottom).
+        :arg str end:
+            The end of the ``Stack`` to add the cards to. Can be ``TOP`` ("top")
+            or ``BOTTOM`` ("bottom").
 
         :returns:
             A given number of cards from the deck.
 
         """
-        dealt_cards = [None] * num
+        _num = num
 
-        pop = {TOP: self.cards.pop, BOTTOM: self.cards.popleft}
+        rebuild = rebuild or self.rebuild
+        re_shuffle = shuffle or self.re_shuffle
 
-        for n in xrange(num):
-            if self.size == 0:
-                if rebuild:
-                    self.build()
-                    if shuffle:
-                        self.shuffle()
-                else:
-                    break
+        self_size = self.size
 
-            card = pop[end]()
-            dealt_cards[n] = card
+        if rebuild or num <= self_size:
+            dealt_cards = [None] * num
+        elif num > self_size:
+            dealt_cards = [None] * self_size
 
-        return dealt_cards
+        while num > 0:
+            ends = {TOP: self.cards.pop, BOTTOM: self.cards.popleft}
+            n = _num - num
+            try:
+                card = ends[end]()
+                dealt_cards[n] = card
+                num -= 1
+            except:
+                if self.size == 0:
+                    if rebuild:
+                        self.build()
+                        if re_shuffle:
+                            self.shuffle()
+                    else:
+                        break
+
+        return Stack(cards=dealt_cards)
 
 
 #===============================================================================
 # Helper Functions
 #===============================================================================
 
-def convert(stack):
+def convert_to_deck(stack):
     """
     Convert a ``Stack`` to a ``Deck``.
 
-    :arg Stack deck:
+    :arg Stack stack:
         The ``Stack`` instance to convert.
 
     """
