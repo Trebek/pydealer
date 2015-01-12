@@ -17,7 +17,7 @@ Documentation
 
 Full documentation for PyDealer can be found on readthedocs.org:
 
-[http://pydealer.readthedocs.org/en/latest/](http://pydealer.readthedocs.org/en/latest/)
+`http://pydealer.readthedocs.org/en/latest/ <http://pydealer.readthedocs.org/en/latest/>`_
 
 
 Quick Usage Example
