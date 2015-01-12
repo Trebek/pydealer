@@ -8,10 +8,9 @@ PyDealer: Playing Card Package
 
 The PyDealer package can be found at the `Python Package Index`_, and should be downloaded from there, and, ideally, installed with `pip`_.
 
-.. note::
-    **Note to Developers**
+**Note to Developers**
 
-    If you want to work on this project, please make sure you are working on the latest version of the `dev branch <https://github.com/Trebek/pydealer/tree/dev>`_, and make your pull requests to that branch. Thanks.
+If you want to work on this project, please make sure you are working on the latest version of the `dev branch <https://github.com/Trebek/pydealer/tree/dev>`_, and make your pull requests to that branch. Thanks.
 
 
 Quick Usage Example

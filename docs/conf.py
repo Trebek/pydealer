@@ -45,7 +45,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'PyDealer'
+project = u'PyDealer: Playing Card Package'
 copyright = u'2015, Alex Crawford'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -101,9 +101,6 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'default'
-# html_theme = 'sphinx_rtd_theme'
-# html_theme = 'alabaster'
-
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -118,8 +115,14 @@ html_theme = 'default'
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 if not on_rtd:  # only import and set the theme if we're building docs locally
-    html_theme = 'sphinx_rtd_theme'
     html_theme_path = ["_themes"]
+    # html_theme = 'sphinx_rtd_theme'
+    html_theme = 'alabaster'
+    html_sidebars = {
+        '**': [
+            'about.html', 'navigation.html', 'searchbox.html', 'donate.html',
+        ]
+    }
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
