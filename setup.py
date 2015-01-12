@@ -8,18 +8,19 @@ with open('README.rst') as f:
 
 setup(
     name='pydealer',
-    version='1.3.0',
+    version='1.4.0',
     author='Alex Crawford',
     author_email='kebert406@yahoo.com',
     packages=['pydealer'],
     scripts=[],
     url='https://github.com/Trebek/pydealer',
-    license='LICENSE.txt',
-    description='A package for constructing decks of playing cards.',
+    download_url='https://pypi.python.org/pypi/pydealer',
+    license='GPLv3',
+    description='A package for constructing decks of playing cards, for games.',
     long_description=README,
     classifiers=[
         "Development Status :: 4 - Beta",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Topic :: Games/Entertainment",
         "Topic :: Utilities",
         "Programming Language :: Python :: 2.6",
@@ -29,7 +30,7 @@ setup(
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3"
     ],
-    keywords='playing cards deck game french standard 52',
+    keywords='playing cards deck games french standard 52 poker blackjack',
     install_requires=[],
     include_package_data=True,
     zip_safe=False
