@@ -2,7 +2,7 @@
 API Documentation
 #################
 
-This is the PyDealer API overview. It contains the documentation extracted from the docstrings of the various classes, methods, and functions in the PyDealer package. If you want to know what a certain function/method does, this is the place to look.
+This is the PyDealer API documentation. It contains the documentation extracted from the docstrings of the various classes, methods, and functions in the PyDealer package. If you want to know what a certain function/method does, this is the place to look.
 
 .. contents::
     :depth: 2
@@ -11,7 +11,7 @@ This is the PyDealer API overview. It contains the documentation extracted from 
 :mod:`card` Module
 ==================
 
-`Source <https://github.com/Trebek/pydealer/blob/dev/pydealer/card.py>`__
+`Source <https://github.com/Trebek/pydealer/blob/master/pydealer/card.py>`__
 
 .. automodule:: pydealer.card
     :members:
@@ -21,7 +21,7 @@ This is the PyDealer API overview. It contains the documentation extracted from 
 :mod:`stack` Module
 ===================
 
-`Source <https://github.com/Trebek/pydealer/blob/dev/pydealer/stack.py>`__
+`Source <https://github.com/Trebek/pydealer/blob/master/pydealer/stack.py>`__
 
 .. automodule:: pydealer.stack
     :members:
@@ -31,7 +31,7 @@ This is the PyDealer API overview. It contains the documentation extracted from 
 :mod:`deck` Module
 ==================
 
-`Source <https://github.com/Trebek/pydealer/blob/dev/pydealer/deck.py>`__
+`Source <https://github.com/Trebek/pydealer/blob/master/pydealer/deck.py>`__
 
 .. automodule:: pydealer.deck
     :members:
@@ -39,12 +39,12 @@ This is the PyDealer API overview. It contains the documentation extracted from 
     :show-inheritance: :class:`pydealer.stack.Stack`
 
 
-:mod:`utils` Module
+:mod:`tools` Module
 ===================
 
-`Source <https://github.com/Trebek/pydealer/blob/dev/pydealer/utils.py>`__
+`Source <https://github.com/Trebek/pydealer/blob/master/pydealer/tools.py>`__
 
-.. automodule:: pydealer.utils
+.. automodule:: pydealer.tools
     :members:
     :undoc-members:
 
@@ -52,7 +52,7 @@ This is the PyDealer API overview. It contains the documentation extracted from 
 :mod:`const` Module
 ===================
 
-`Source <https://github.com/Trebek/pydealer/blob/dev/pydealer/const.py>`__
+`Source <https://github.com/Trebek/pydealer/blob/master/pydealer/const.py>`__
 
 .. automodule:: pydealer.const
     :members:
