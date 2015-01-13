@@ -16,7 +16,7 @@ PyDealer: Playing Card Package
 Quick Usage Example
 ===================
 
-Here is a quick example, using IDLE, demonstrating how to construct a new |deck| instance, representing a full |_fd| of cards, as well as how to shuffle the deck, and deal some cards (7 of them) from it, to a hand. Then we'll sort the hand, and print a listing of it's contents, in a human readable way, with a simple print statement.
+Here is a quick example, using IDLE, demonstrating how to construct a new |deck| instance, representing a full |_fd| of cards, as well as how to shuffle the deck, and deal some cards (7 of them) from it, to a hand. We'll then sort the hand, and print a listing of it's contents, in a human readable way, with a simple print statement.
 
 .. code-block:: pycon
 
