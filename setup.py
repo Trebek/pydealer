@@ -33,5 +33,6 @@ setup(
     keywords='playing cards deck games french standard 52 poker blackjack',
     install_requires=[],
     include_package_data=True,
-    zip_safe=False
+    zip_safe=False,
+    test_suite='tests',
 )
