@@ -35,6 +35,7 @@ from pydealer.tools import (
     open_cards,
     random_card,
     save_cards,
+    sort_card_indices,
     sort_cards
 )
 
