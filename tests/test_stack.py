@@ -147,6 +147,13 @@ class TestStack(unittest.TestCase):
 
         self.assertEqual(len(found), 1)
 
+    def test_find_sort(self):
+        """"""
+        found = self.full_stack.find("Spades", sort=True)
+
+        self.assertEqual(len(found), 13)
+        self.assertEqual(self.full_stack[found[0]].value, "2")
+
     def test_find_list_full(self):
         """"""
         full_list = ["Ace of Spades", "2 of Diamonds", "Queen of Hearts",

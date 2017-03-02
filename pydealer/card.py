@@ -186,7 +186,7 @@ class Card(object):
                     ranks["suits"][other.suit]
                 )
             else:
-                return ranks[self.value] == ranks[other.value]
+                return ranks["values"][self.value] == ranks["values"][other.value]
         else:
             return False
 
@@ -219,7 +219,7 @@ class Card(object):
                     )
                 )
             else:
-                return ranks[self.value] >= ranks[other.value]
+                return ranks["values"][self.value] >= ranks["values"][other.value]
         else:
             return False
 
@@ -251,7 +251,7 @@ class Card(object):
                     )
                 )
             else:
-                return ranks[self.value] > ranks[other.value]
+                return ranks["values"][self.value] > ranks["values"][other.value]
         else:
             return False
 
@@ -284,7 +284,7 @@ class Card(object):
                     )
                 )
             else:
-                return ranks[self.value] <= ranks[other.value]
+                return ranks["values"][self.value] <= ranks["values"][other.value]
         else:
             return False
 
@@ -316,7 +316,7 @@ class Card(object):
                     )
                 )
             else:
-                return ranks[self.value] < ranks[other.value]
+                return ranks["values"][self.value] < ranks["values"][other.value]
         else:
             return False
 
@@ -344,7 +344,7 @@ class Card(object):
                     ranks["suits"][other.suit]
                 )
             else:
-                return ranks[self.value] != ranks[other.value]
+                return ranks["values"][self.value] != ranks["values"][other.value]
         else:
             return False
 

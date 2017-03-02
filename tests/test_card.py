@@ -14,6 +14,7 @@
 import unittest
 
 import pydealer
+from pydealer.const import POKER_RANKS
 
 
 #===============================================================================
@@ -131,6 +132,14 @@ class TestCard(unittest.TestCase):
         two_diamonds = pydealer.Card("2", "Diamonds")
 
         result = self.card.lt(two_diamonds)
+
+        self.assertFalse(result)
+
+    def test_lt_with_custom_rank(self):
+        """"""
+        two_diamonds = pydealer.Card("2", "Diamonds")
+
+        result = self.card.lt(two_diamonds, ranks=POKER_RANKS)
 
         self.assertFalse(result)
 
