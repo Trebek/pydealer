@@ -100,10 +100,11 @@ class Deck(Stack):
 
         """
         try:
-            new_deck = Deck(cards=(list(self.cards) + list(other.cards)),
-                build=False)
+            new_deck = self.__class__(
+                    cards=(list(self.cards) + list(other.cards)), build=False)
         except:
-            new_deck = Deck(cards=list(self.cards) + other, build=False)
+            new_deck = self.__class__(
+                    cards=list(self.cards) + other, build=False)
 
         return new_deck
 

@@ -99,9 +99,10 @@ class Stack(object):
 
         """
         try:
-            new_stack = Stack(cards=(list(self.cards) + list(other.cards)))
+            new_stack = self.__class__(
+                    cards=(list(self.cards) + list(other.cards)))
         except:
-            new_stack = Stack(cards=(list(self.cards) + other))
+            new_stack = self.__class__(cards=(list(self.cards) + other))
 
         return new_stack
 
