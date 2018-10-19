@@ -72,6 +72,24 @@ BIG2_RANKS = {
     }
 }
 
+CRIBBAGE_RANKS = {
+    "values": {
+        "King": 10,
+        "Queen": 10,
+        "Jack": 10,
+        "10": 10,
+        "9": 9,
+        "8": 8,
+        "7": 7,
+        "6": 6,
+        "5": 5,
+        "4": 4,
+        "3": 3,
+        "2": 2,
+        "Ace": 1,
+    }
+}
+
 DEFAULT_RANKS = {
     "values": POKER_RANKS["values"],
     "suits": BIG2_RANKS["suits"]
