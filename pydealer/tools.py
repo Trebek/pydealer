@@ -276,7 +276,7 @@ def get_card(cards, term, limit=0, sort=False, ranks=None):
         cards = [v for i, v in enumerate(cards) if i is not term]
 
     if sort:
-        got_cards = sort_cards(got_cards)
+        got_cards = sort_cards(got_cards, ranks)
 
     return cards, got_cards
 
